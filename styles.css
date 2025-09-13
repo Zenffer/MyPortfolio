@@ -1,0 +1,235 @@
+/* ===== CSS VARIABLES ===== */
+:root {
+  --red: #e63946;
+  --offwhite: #f1faee;
+  --lightblue: #a8dadc;
+  --mediumblue: #457b9d;
+  --darkblue: #0f233f;
+}
+
+/* ===== BASE STYLES ===== */
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  background: var(--darkblue);
+  color: #fff; /* White text */
+}
+
+/* ===== HEADER STYLES ===== */
+header {
+  background: #222;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 10;
+  margin-bottom: 2rem;
+  color: #fff; /* White text */
+}
+
+/* ===== VISIBILITY CONTROL ===== */
+/* Hide header and main by default */
+header, main {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+/* Show when scrolled */
+header.visible, main.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ===== NAVIGATION STYLES ===== */
+nav ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  margin: 0;
+  padding: 1rem 0;
+}
+
+nav ul li {
+  margin: 0 1.5rem;
+}
+
+nav ul li a {
+  color: #fff; /* White text */
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: color 0.2s;
+}
+
+nav ul li a:hover {
+  color: #000; /* Black text on hover */
+}
+
+/* ===== PARTICLE ANIMATION CANVAS ===== */
+#intro-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  display: block;
+}
+
+/* ===== HERO SECTION STYLES ===== */
+.intro {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, var(--mediumblue) 0%, var(--darkblue) 100%);
+  color: #fff; /* White text */
+  overflow: hidden;
+  text-align: center;
+}
+
+/* ===== HERO TEXT STYLES ===== */
+/* Main name display - large and prominent */
+.intro .name {
+  font-size: 6rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin: 0 0 1rem 0;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  text-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  color: #fff; /* White text */
+}
+
+/* Professional title - smaller subtitle */
+.intro .title {
+  font-size: 3rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin: 0;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  color: #fff; /* White text */
+}
+
+/* Hide hero text when scrolling */
+.intro.hidden .name,
+.intro.hidden .title {
+  opacity: 0;
+  transform: translateY(-50px);
+}
+
+/* ===== MAIN CONTENT STYLES ===== */
+main {
+  position: relative;
+  z-index: 2;
+  margin-top: 100vh; /* Push main below the fixed intro */
+  background: var(--lightblue);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  padding-top: 40px; /* Adjust as needed */
+  padding-bottom: 40px;
+  color: #000; /* Black text */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+main.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ===== CONTENT SECTIONS ===== */
+section#about, section#projects, section#contact {
+  max-width: 700px;
+  margin: 3rem auto;
+  background: #fff; /* White background */
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  color: #000; /* Black text */
+}
+
+section h1, section h2 {
+  color: #000; /* Black text for headings */
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* ===== FOOTER STYLES ===== */
+footer {
+  text-align: center;
+  padding: 2rem 0;
+  background: var(--mediumblue);
+  color: #fff;
+  font-size: 1rem;
+  border-top: 1px solid var(--lightblue);
+  position: relative;
+  z-index: 20; /* Ensure footer is above .intro */
+  opacity: 1;  /* Always visible */
+  pointer-events: auto;
+}
+
+/* ===== SCROLL INDICATOR ===== */
+.scroll-indicator {
+  position: absolute;
+  left: 50%;
+  bottom: 48px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0.8;
+  animation: bounce 1.6s infinite;
+  pointer-events: none;
+}
+
+.scroll-indicator svg {
+  display: block;
+  width: 96px;
+  height: 64px;
+  z-index: 1;
+}
+
+.scroll-indicator.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(12px); }
+}
+
+/* ===== CUSTOM CURSOR ===== */
+.cursor-circle {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50px;
+  height: 50px;
+  border: 3px solid var(--lightblue);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  mix-blend-mode: hard-light;
+}
+
+/* Hide custom cursor on touch devices */
+@media (pointer: coarse) {
+  .cursor-circle { display: none; }
+}
