@@ -37,7 +37,6 @@ $pdo = getDatabaseConnection($db_config);
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="logo">PORTFOLIO</div>
                 <div class="user-info">
                     <div class="user-avatar">
                         <i class="fas fa-user"></i>
@@ -47,82 +46,47 @@ $pdo = getDatabaseConnection($db_config);
                         <p>Portfolio Owner</p>
                     </div>
                 </div>
-                <button class="toggle-sidebar" onclick="toggleSidebar()">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
+                <div id="nav-icon3" class="toggle-sidebar">
+                    <img src="assets/js/icons/closeIcon.svg" alt="Close" class="close-icon">
+                </div>
             </div>
             
             <nav class="sidebar-nav">
-                <a href="#" class="nav-item">
-                    <i class="fas fa-th-large"></i>
-                    <span>Dashboard</span>
+                <a href="#" class="nav-item active" onclick="showMainSection('content')">
+                    <i class="fas fa-edit"></i>
+                    <span>Content Management</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" onclick="showMainSection('profile')">
                     <i class="fas fa-user"></i>
                     <span>Profile</span>
                 </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-images"></i>
-                    <span>Gallery</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-edit"></i>
-                    <span>Content</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-quote-left"></i>
-                    <span>Testimonials</span>
-                </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" onclick="showMainSection('contact')">
                     <i class="fas fa-envelope"></i>
                     <span>Contact</span>
                 </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Analytics</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-comments"></i>
-                    <span>Messages</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-video"></i>
-                    <span>Video Room</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-cog"></i>
-                    <span>Services</span>
-                </a>
-                <a href="#" class="nav-item active">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-question-circle"></i>
-                    <span>Help</span>
-                </a>
-                <a href="logout.php" class="nav-item">
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="logout.php" class="nav-item logout-item">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </a>
-            </nav>
+            </div>
         </div>
 
         <!-- Main Content -->
         <div class="main-content" id="mainContent">
             <!-- Top Bar -->
             <div class="top-bar">
-                <div class="search-bar">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search">
+                <div class="top-bar-left">
+                    <div id="nav-icon3-top" class="top-hamburger">
+                        <img src="assets/js/icons/menuIcon.svg" alt="Menu" class="menu-icon">
+                    </div>
+                    <div id="nav-icon3-mobile" class="mobile-hamburger">
+                        <img src="assets/js/icons/menuIcon.svg" alt="Menu" class="menu-icon">
+                    </div>
                 </div>
                 <div class="top-bar-actions">
-                    <button class="action-btn">
-                        <i class="fas fa-file-alt"></i>
-                    </button>
-                    <button class="action-btn">
-                        <i class="fas fa-bell"></i>
-                    </button>
                     <div class="user-menu">
                         <div class="user-menu-avatar">
                             <?php echo strtoupper(substr($_SESSION['username'], 0, 1)); ?>
@@ -135,124 +99,541 @@ $pdo = getDatabaseConnection($db_config);
 
             <!-- Content Area -->
             <div class="content-area">
-                <div class="page-header">
-                    <h1 class="page-title">Portfolio Settings</h1>
-                    <p class="page-subtitle">Manage your portfolio content, profile, and site settings.</p>
+                <!-- Content Management Header -->
+                <div id="contentHeader" class="page-header">
+                    <h1 class="page-title">Content Management</h1>
+                    <p class="page-subtitle">Manage your portfolio pages and content.</p>
                 </div>
 
-                <div class="settings-layout">
-                    <!-- Settings Navigation -->
+                <!-- Profile Management Header -->
+                <div id="profileHeader" class="page-header" style="display: none;">
+                    <h1 class="page-title">Profile Management</h1>
+                    <p class="page-subtitle">Manage your personal information and profile settings.</p>
+                </div>
+
+                <!-- Contact Management Header -->
+                <div id="contactHeader" class="page-header" style="display: none;">
+                    <h1 class="page-title">Contact Management</h1>
+                    <p class="page-subtitle">Manage your contact information and social links.</p>
+                </div>
+
+                <!-- Content Management Layout -->
+                <div id="contentLayout" class="settings-layout">
+                    <!-- Content Navigation -->
                     <div class="settings-nav">
                         <a href="#" class="settings-nav-item active">
-                            <i class="fas fa-user"></i>
-                            <span>Profile Settings</span>
+                            <i class="fas fa-th-large"></i>
+                            <span>Projects</span>
                         </a>
                         <a href="#" class="settings-nav-item">
-                            <i class="fas fa-edit"></i>
-                            <span>Content Management</span>
+                            <i class="fas fa-camera"></i>
+                            <span>Photography</span>
                         </a>
-                        <a href="#" class="settings-nav-item">
-                            <i class="fas fa-images"></i>
-                            <span>Gallery</span>
+                        <a href="#" class="settings-nav-item" id="cosplayMenu">
+                            <i class="fas fa-mask"></i>
+                            <span>Cosplay</span>
+                            <i class="fas fa-chevron-down" style="margin-left: 8px;"></i>
                         </a>
                         <a href="#" class="settings-nav-item">
                             <i class="fas fa-quote-left"></i>
-                            <span>Testimonials</span>
-                        </a>
-                        <a href="#" class="settings-nav-item">
-                            <i class="fas fa-envelope"></i>
-                            <span>Contact Info</span>
-                        </a>
-                        <a href="#" class="settings-nav-item">
-                            <i class="fas fa-cog"></i>
-                            <span>Site Settings</span>
-                        </a>
-                        <a href="#" class="settings-nav-item">
-                            <i class="fas fa-lock"></i>
-                            <span>Security</span>
+                            <span>Kind Words</span>
                         </a>
                     </div>
 
-                    <!-- Settings Content -->
-                    <div class="settings-content">
-                        <div class="section-header">
-                            <h2 class="section-title">Profile Settings</h2>
-                            <p class="section-subtitle">Update your personal information and profile details.</p>
-                        </div>
+                    <!-- Content Management Area -->
+                    <div class="settings-content" id="contentArea">
+                        <!-- Projects Management -->
+                        <div id="projectsContent" class="content-section">
+                            <div class="section-header">
+                                <h2 class="section-title">Projects Management</h2>
+                                <p class="section-subtitle">Manage your projects showcase content and images.</p>
+                            </div>
 
-                        <!-- Profile Picture Upload -->
-                        <div class="form-section">
-                            <h3>Profile picture upload</h3>
-                            <div class="profile-upload">
-                                <div class="profile-avatar">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div class="profile-info">
-                                    <h4>Jerome</h4>
-                                    <p>Developer, Photographer & Cosplayer</p>
-                                    <p>Portfolio Owner</p>
-                                    <div style="display: flex; gap: 8px; margin-top: 8px;">
-                                        <button class="btn btn-primary">Upload New Photo</button>
-                                        <button class="btn btn-danger">Delete</button>
+                            <!-- Page Content -->
+                            <div class="form-section">
+                                <h3>Page Content</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Page Title</label>
+                                        <input type="text" value="Projects">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Page Description</label>
+                                        <input type="text" value="A showcase of my recent development work and creative projects.">
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Hero Section -->
+                            <div class="form-section">
+                                <h3>Hero Section</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Hero Title</label>
+                                        <input type="text" value="Hi, I'm Jerome.">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Hero Subtitle</label>
+                                        <input type="text" value="Developer, Photographer & Cosplayer.">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Projects Grid -->
+                            <div class="form-section">
+                                <h3>Projects Grid</h3>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
+                                    <div style="background: #08090D; border: 1px solid #A1A69C; border-radius: 8px; padding: 16px; text-align: center;">
+                                        <div style="width: 100%; height: 120px; background: #292c3a; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: #A1A69C;">
+                                            <i class="fas fa-image" style="font-size: 24px;"></i>
+                                        </div>
+                                        <h4 style="color: #fff; margin-bottom: 4px;">Project 1</h4>
+                                        <p style="color: #A1A69C; font-size: 12px;">Description</p>
+                                        <div style="margin-top: 8px;">
+                                            <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                                        </div>
+                                    </div>
+                                    <div style="background: #08090D; border: 1px solid #A1A69C; border-radius: 8px; padding: 16px; text-align: center;">
+                                        <div style="width: 100%; height: 120px; background: #292c3a; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: #A1A69C;">
+                                            <i class="fas fa-image" style="font-size: 24px;"></i>
+                                        </div>
+                                        <h4 style="color: #fff; margin-bottom: 4px;">Project 2</h4>
+                                        <p style="color: #A1A69C; font-size: 12px;">Description</p>
+                                        <div style="margin-top: 8px;">
+                                            <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                                        </div>
+                                    </div>
+                                    <div style="background: #08090D; border: 1px solid #A1A69C; border-radius: 8px; padding: 16px; text-align: center;">
+                                        <div style="width: 100%; height: 120px; background: #292c3a; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: #A1A69C;">
+                                            <i class="fas fa-plus" style="font-size: 24px;"></i>
+                                        </div>
+                                        <h4 style="color: #fff; margin-bottom: 4px;">Add Project</h4>
+                                        <p style="color: #A1A69C; font-size: 12px;">Click to add new</p>
+                                        <div style="margin-top: 8px;">
+                                            <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px;">Add</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="action-buttons">
+                                <button class="btn btn-secondary">Preview</button>
+                                <button class="btn btn-primary">Save Changes</button>
+                            </div>
                         </div>
 
-                        <!-- Personal Information -->
-                        <div class="form-section">
-                            <h3>Personal Information</h3>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Full Name</label>
-                                    <input type="text" value="Jeroboam Oliveros">
-                                </div>
-                                <div class="form-group">
-                                    <label>Professional Title</label>
-                                    <input type="text" value="Developer, Photographer & Cosplayer">
+                        <!-- Photography Management -->
+                        <div id="photographyContent" class="content-section" style="display: none;">
+                            <div class="section-header">
+                                <h2 class="section-title">Photography Management</h2>
+                                <p class="section-subtitle">Manage your photography gallery and content.</p>
+                            </div>
+
+                            <!-- Page Content -->
+                            <div class="form-section">
+                                <h3>Page Content</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Page Title</label>
+                                        <input type="text" value="Photography">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Page Description</label>
+                                        <input type="text" value="A selection of my favorite shots. More coming soon.">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Email Address</label>
-                                    <input type="email" value="hello@example.com">
+
+                            <!-- Hero Section -->
+                            <div class="form-section">
+                                <h3>Hero Section</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Hero Title</label>
+                                        <input type="text" value="Hi, I'm Jerome.">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Hero Subtitle</label>
+                                        <input type="text" value="Developer, Photographer & Cosplayer.">
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label>Location</label>
-                                    <input type="text" value="Your City, Country">
+                            </div>
+
+                            <!-- Photography Gallery -->
+                            <div class="form-section">
+                                <h3>Photography Gallery</h3>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
+                                    <div style="background: #08090D; border: 1px solid #A1A69C; border-radius: 8px; padding: 16px; text-align: center;">
+                                        <div style="width: 100%; height: 120px; background: #292c3a; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: #A1A69C; background-image: url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=200&auto=format&fit=crop'); background-size: cover; background-position: center;">
+                                        </div>
+                                        <h4 style="color: #fff; margin-bottom: 4px;">Mountain Sunrise</h4>
+                                        <p style="color: #A1A69C; font-size: 12px;">Captured during golden hour</p>
+                                        <div style="margin-top: 8px;">
+                                            <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                                        </div>
+                                    </div>
+                                    <div style="background: #08090D; border: 1px solid #A1A69C; border-radius: 8px; padding: 16px; text-align: center;">
+                                        <div style="width: 100%; height: 120px; background: #292c3a; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: #A1A69C; background-image: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=200&auto=format&fit=crop'); background-size: cover; background-position: center;">
+                                        </div>
+                                        <h4 style="color: #fff; margin-bottom: 4px;">Misty Forest</h4>
+                                        <p style="color: #A1A69C; font-size: 12px;">Early morning fog</p>
+                                        <div style="margin-top: 8px;">
+                                            <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                                        </div>
+                                    </div>
+                                    <div style="background: #08090D; border: 1px solid #A1A69C; border-radius: 8px; padding: 16px; text-align: center;">
+                                        <div style="width: 100%; height: 120px; background: #292c3a; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: #A1A69C; background-image: url('https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?q=80&w=200&auto=format&fit=crop'); background-size: cover; background-position: center;">
+                                        </div>
+                                        <h4 style="color: #fff; margin-bottom: 4px;">Urban Twilight</h4>
+                                        <p style="color: #A1A69C; font-size: 12px;">City lights at dusk</p>
+                                        <div style="margin-top: 8px;">
+                                            <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                                        </div>
+                                    </div>
+                                    <div style="background: #08090D; border: 1px solid #A1A69C; border-radius: 8px; padding: 16px; text-align: center;">
+                                        <div style="width: 100%; height: 120px; background: #292c3a; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: #A1A69C;">
+                                            <i class="fas fa-plus" style="font-size: 24px;"></i>
+                                        </div>
+                                        <h4 style="color: #fff; margin-bottom: 4px;">Add Photo</h4>
+                                        <p style="color: #A1A69C; font-size: 12px;">Upload new image</p>
+                                        <div style="margin-top: 8px;">
+                                            <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px;">Upload</button>
+                                        </div>
+                                    </div>
                                 </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="action-buttons">
+                                <button class="btn btn-secondary">Preview</button>
+                                <button class="btn btn-primary">Save Changes</button>
                             </div>
                         </div>
 
-                        <!-- Social Media -->
-                        <div class="form-section">
-                            <h3>Social Media & Links</h3>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>LinkedIn URL</label>
-                                    <input type="url" value="https://www.linkedin.com">
-                                </div>
-                                <div class="form-group">
-                                    <label>Instagram URL</label>
-                                    <input type="url" value="https://www.instagram.com">
+                        <!-- Cosplay Management -->
+                        <div id="cosplayContent" class="content-section" style="display: none;">
+                            <div class="section-header">
+                                <h2 class="section-title">Cosplay Management</h2>
+                                <p class="section-subtitle">Manage your cosplay gallery and content.</p>
+                            </div>
+
+                            <!-- Page Content -->
+                            <div class="form-section">
+                                <h3>Page Content</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Page Title</label>
+                                        <input type="text" value="Cosplay">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Page Description</label>
+                                        <input type="text" value="A selection of my favorite cosplays. More coming soon.">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Portfolio Website</label>
-                                    <input type="url" value="https://yourportfolio.com">
+
+                            <!-- Hero Section -->
+                            <div class="form-section">
+                                <h3>Hero Section</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Hero Title</label>
+                                        <input type="text" value="Hi, I'm Jerome.">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Hero Subtitle</label>
+                                        <input type="text" value="Developer, Photographer & Cosplayer.">
+                                    </div>
+            </div>
+        </div>
+        
+                            <!-- Cosplay Gallery -->
+                            <div class="form-section">
+                                <h3>Cosplay Gallery</h3>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
+                                    <div style="background: #08090D; border: 1px solid #A1A69C; border-radius: 8px; padding: 16px; text-align: center;">
+                                        <div style="width: 100%; height: 120px; background: #292c3a; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: #A1A69C; background-image: url('https://images.unsplash.com/photo-1519125323398-675f0ddb6308?q=80&w=200&auto=format&fit=crop'); background-size: cover; background-position: center;">
+                                        </div>
+                                        <h4 style="color: #fff; margin-bottom: 4px;">Cosplay 1</h4>
+                                        <p style="color: #A1A69C; font-size: 12px;">Description</p>
+                                        <div style="margin-top: 8px;">
+                                            <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                                        </div>
+                                    </div>
+                                    <div style="background: #08090D; border: 1px solid #A1A69C; border-radius: 8px; padding: 16px; text-align: center;">
+                                        <div style="width: 100%; height: 120px; background: #292c3a; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: #A1A69C; background-image: url('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=200&auto=format&fit=crop'); background-size: cover; background-position: center;">
+                                        </div>
+                                        <h4 style="color: #fff; margin-bottom: 4px;">Cosplay 2</h4>
+                                        <p style="color: #A1A69C; font-size: 12px;">Description</p>
+                                        <div style="margin-top: 8px;">
+                                            <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                                        </div>
+                                    </div>
+                                    <div style="background: #08090D; border: 1px solid #A1A69C; border-radius: 8px; padding: 16px; text-align: center;">
+                                        <div style="width: 100%; height: 120px; background: #292c3a; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: #A1A69C;">
+                                            <i class="fas fa-plus" style="font-size: 24px;"></i>
+                                        </div>
+                                        <h4 style="color: #fff; margin-bottom: 4px;">Add Cosplay</h4>
+                                        <p style="color: #A1A69C; font-size: 12px;">Upload new cosplay</p>
+                                        <div style="margin-top: 8px;">
+                                            <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px;">Upload</button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label>Resume URL</label>
-                                    <input type="url" value="#">
+            </div>
+            
+                            <!-- Action Buttons -->
+                            <div class="action-buttons">
+                                <button class="btn btn-secondary">Preview</button>
+                                <button class="btn btn-primary">Save Changes</button>
+                            </div>
+            </div>
+            
+                        <!-- Kind Words Management -->
+                        <div id="kindwordsContent" class="content-section" style="display: none;">
+                            <div class="section-header">
+                                <h2 class="section-title">Kind Words Management</h2>
+                                <p class="section-subtitle">Manage testimonials and feedback from clients or friends.</p>
+            </div>
+            
+                            <!-- Page Content -->
+                            <div class="form-section">
+                                <h3>Page Content</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Page Title</label>
+                                        <input type="text" value="Kind Words">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Page Description</label>
+                                        <input type="text" value="Some lovely words from people I've worked with.">
+                                    </div>
                                 </div>
+            </div>
+            
+                            <!-- Testimonials Section -->
+                            <div class="form-section">
+                                <h3>Testimonials</h3>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; margin-bottom: 16px;">
+                                    <div style="background: #08090D; border: 1px solid #A1A69C; border-radius: 8px; padding: 16px;">
+                                        <p style="color: #A1A69C; font-size: 14px; margin-bottom: 8px;">"Jerome is a fantastic collaborator and always delivers high quality work!"</p>
+                                        <div style="display: flex; align-items: center;">
+                                            <div style="width: 32px; height: 32px; background: #292c3a; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #A1A69C; margin-right: 8px;">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <span style="color: #fff; font-size: 13px;">Alex Smith</span>
+                                        </div>
+                                        <div style="margin-top: 8px;">
+                                            <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                                        </div>
+                                    </div>
+                                    <div style="background: #08090D; border: 1px solid #A1A69C; border-radius: 8px; padding: 16px;">
+                                        <p style="color: #A1A69C; font-size: 14px; margin-bottom: 8px;">"Creative, reliable, and a pleasure to work with."</p>
+                                        <div style="display: flex; align-items: center;">
+                                            <div style="width: 32px; height: 32px; background: #292c3a; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #A1A69C; margin-right: 8px;">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <span style="color: #fff; font-size: 13px;">Jamie Lee</span>
+                                        </div>
+                                        <div style="margin-top: 8px;">
+                                            <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                                        </div>
+                                    </div>
+                                    <div style="background: #08090D; border: 1px solid #A1A69C; border-radius: 8px; padding: 16px;">
+                                        <p style="color: #A1A69C; font-size: 14px; margin-bottom: 8px;">"Always goes above and beyond for every project."</p>
+                                        <div style="display: flex; align-items: center;">
+                                            <div style="width: 32px; height: 32px; background: #292c3a; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #A1A69C; margin-right: 8px;">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <span style="color: #fff; font-size: 13px;">Morgan Yu</span>
+                                        </div>
+                                        <div style="margin-top: 8px;">
+                                            <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                                        </div>
+                                    </div>
+                                    <div style="background: #08090D; border: 1px solid #A1A69C; border-radius: 8px; padding: 16px; text-align: center;">
+                                        <div style="width: 100%; height: 32px; display: flex; align-items: center; justify-content: center; color: #A1A69C;">
+                                            <i class="fas fa-plus" style="font-size: 24px;"></i>
+                                        </div>
+                                        <h4 style="color: #fff; margin-bottom: 4px;">Add Testimonial</h4>
+                                        <p style="color: #A1A69C; font-size: 12px;">Add new kind words</p>
+                                        <div style="margin-top: 8px;">
+                                            <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px;">Add</button>
+                                        </div>
+                                    </div>
+                                </div>
+            </div>
+            
+                            <!-- Action Buttons -->
+                            <div class="action-buttons">
+                                <button class="btn btn-secondary">Preview</button>
+                                <button class="btn btn-primary">Save Changes</button>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <!-- Action Buttons -->
-                        <div class="action-buttons">
-                            <button class="btn btn-secondary">Cancel</button>
-                            <button class="btn btn-primary">Save Changes</button>
+                <!-- Profile Management Layout -->
+                <div id="profileLayout" class="settings-layout" style="display: none;">
+                    <div class="settings-content">
+                        <div class="content-section">
+                            <div class="section-header">
+                                <h2 class="section-title">Personal Information</h2>
+                                <p class="section-subtitle">Update your personal details and profile information.</p>
+                            </div>
+
+                            <!-- Profile Picture -->
+                            <div class="form-section">
+                                <h3>Profile Picture</h3>
+                                <div class="profile-picture-upload">
+                                    <div class="current-picture">
+                                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" alt="Current Profile" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid #A1A69C;">
+                                    </div>
+                                    <div class="upload-controls">
+                                        <input type="file" id="profileUpload" accept="image/*" style="display: none;">
+                                        <button class="btn btn-secondary" onclick="document.getElementById('profileUpload').click()">Change Picture</button>
+                                        <p style="color: #A1A69C; font-size: 12px; margin-top: 8px;">Recommended: 200x200px, JPG or PNG</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Basic Information -->
+                            <div class="form-section">
+                                <h3>Basic Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Full Name</label>
+                                        <input type="text" value="Jeroboam Oliveros">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Display Name</label>
+                                        <input type="text" value="Jerome">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Title/Profession</label>
+                                        <input type="text" value="Developer • Photographer • Cosplayer">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Location</label>
+                                        <input type="text" value="Your City, Country">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- About Section -->
+                            <div class="form-section">
+                                <h3>About Me</h3>
+                                <div class="form-group">
+                                    <label>Bio/Description</label>
+                                    <textarea rows="4" placeholder="Tell people about yourself...">I craft clean, performant web experiences and tell stories through images and character work. With a background that blends software development, photography, and cosplay, I enjoy projects that balance technical depth with creative polish.</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Additional Info</label>
+                                    <textarea rows="3" placeholder="Additional details about yourself...">When I'm not shipping features, I'm experimenting with lighting setups, sewing details, or planning the next shoot.</textarea>
+            </div>
+        </div>
+        
+                            <!-- Skills & Tools -->
+                            <div class="form-section">
+                                <h3>Skills & Tools</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Skills (comma separated)</label>
+                                        <input type="text" value="HTML/CSS, JavaScript, PHP, jQuery, Responsive UI, Photography, Lighting, Cosplay Fabrication">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Tools (comma separated)</label>
+                                        <input type="text" value="VS Code, Git, Figma, Lightroom, Photoshop">
+                                    </div>
+                                </div>
+            </div>
+            
+                            <!-- Action Buttons -->
+                            <div class="action-buttons">
+                                <button class="btn btn-secondary">Preview</button>
+                                <button class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            
+                <!-- Contact Management Layout -->
+                <div id="contactLayout" class="settings-layout" style="display: none;">
+                    <div class="settings-content">
+                        <div class="content-section">
+                            <div class="section-header">
+                                <h2 class="section-title">Contact Information</h2>
+                                <p class="section-subtitle">Manage your contact details and social media links.</p>
+            </div>
+            
+                            <!-- Contact Details -->
+                            <div class="form-section">
+                                <h3>Contact Details</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Email Address</label>
+                                        <input type="email" value="hello@example.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Phone Number</label>
+                                        <input type="tel" value="+1 (555) 123-4567">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Location</label>
+                                        <input type="text" value="Your City, Country">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Website</label>
+                                        <input type="url" value="https://yourwebsite.com">
+                                    </div>
+                                </div>
+            </div>
+            
+                            <!-- Social Media -->
+                            <div class="form-section">
+                                <h3>Social Media Links</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>LinkedIn</label>
+                                        <input type="url" value="https://www.linkedin.com/in/yourprofile">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Instagram</label>
+                                        <input type="url" value="https://www.instagram.com/yourprofile">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Twitter/X</label>
+                                        <input type="url" value="https://twitter.com/yourprofile">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>GitHub</label>
+                                        <input type="url" value="https://github.com/yourprofile">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Behance</label>
+                                        <input type="url" value="https://www.behance.net/yourprofile">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Dribbble</label>
+                                        <input type="url" value="https://dribbble.com/yourprofile">
+                                    </div>
+                                </div>
+            </div>
+            
+                            <!-- Action Buttons -->
+                            <div class="action-buttons">
+                                <button class="btn btn-secondary">Preview</button>
+                                <button class="btn btn-primary">Save Changes</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -260,30 +641,152 @@ $pdo = getDatabaseConnection($db_config);
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
+            const hamburger = document.getElementById('nav-icon3');
             
             sidebar.classList.toggle('collapsed');
             mainContent.classList.toggle('sidebar-collapsed');
+            hamburger.classList.toggle('open');
         }
 
         // Mobile sidebar toggle
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('sidebar');
+            const hamburger = document.getElementById('nav-icon3');
             sidebar.classList.toggle('open');
+            hamburger.classList.toggle('open');
         }
 
         // Close mobile sidebar when clicking outside
         document.addEventListener('click', function(event) {
             const sidebar = document.getElementById('sidebar');
+            const hamburger = document.getElementById('nav-icon3');
             const isClickInsideSidebar = sidebar.contains(event.target);
-            const isMobileMenuButton = event.target.closest('.mobile-menu-button');
+            const isMobileMenuButton = event.target.closest('#nav-icon3');
             
             if (!isClickInsideSidebar && !isMobileMenuButton && window.innerWidth <= 768) {
                 sidebar.classList.remove('open');
+                hamburger.classList.remove('open');
             }
+        });
+
+        // Main section switching functionality
+        function showMainSection(sectionType) {
+            // Hide all headers
+            document.getElementById('contentHeader').style.display = 'none';
+            document.getElementById('profileHeader').style.display = 'none';
+            document.getElementById('contactHeader').style.display = 'none';
+
+            // Hide all layouts
+            document.getElementById('contentLayout').style.display = 'none';
+            document.getElementById('profileLayout').style.display = 'none';
+            document.getElementById('contactLayout').style.display = 'none';
+
+            // Remove active class from all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Show selected section
+            switch(sectionType) {
+                case 'content':
+                    document.getElementById('contentHeader').style.display = 'block';
+                    document.getElementById('contentLayout').style.display = 'block';
+                    break;
+                case 'profile':
+                    document.getElementById('profileHeader').style.display = 'block';
+                    document.getElementById('profileLayout').style.display = 'block';
+                    break;
+                case 'contact':
+                    document.getElementById('contactHeader').style.display = 'block';
+                    document.getElementById('contactLayout').style.display = 'block';
+                    break;
+            }
+
+            // Add active class to clicked nav item
+            event.target.closest('.nav-item').classList.add('active');
+        }
+
+        // Content switching functionality
+        function showContent(contentType) {
+            // Hide all content sections
+            const contentSections = document.querySelectorAll('.content-section');
+            contentSections.forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Remove active class from all nav items
+            const navItems = document.querySelectorAll('.settings-nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Show selected content
+            const selectedContent = document.getElementById(contentType + 'Content');
+            if (selectedContent) {
+                selectedContent.style.display = 'block';
+            }
+
+            // Add active class to clicked nav item
+            event.target.closest('.settings-nav-item').classList.add('active');
+        }
+
+        // jQuery for hamburger menu - this will handle the click
+        $(document).ready(function(){
+            // Top hamburger menu - opens sidebar
+            $('#nav-icon3-top, #nav-icon3-mobile').click(function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Fade effect on click
+                $(this).find('.menu-icon').fadeOut(100, function() {
+                    $(this).fadeIn(100);
+                });
+                
+                // Open the sidebar
+                const sidebar = document.getElementById('sidebar');
+                const mainContent = document.getElementById('mainContent');
+                
+                sidebar.classList.add('open');
+                mainContent.classList.add('sidebar-open');
+            });
+            
+            // Sidebar hamburger menu - closes sidebar
+            $('#nav-icon3').click(function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Fade effect on click
+                $(this).find('.close-icon').fadeOut(100, function() {
+                    $(this).fadeIn(100);
+                });
+                
+                // Close the sidebar
+                const sidebar = document.getElementById('sidebar');
+                const mainContent = document.getElementById('mainContent');
+                
+                sidebar.classList.remove('open');
+                mainContent.classList.remove('sidebar-open');
+            });
+
+            // Add click event listeners to content navigation
+            $('.settings-nav-item').click(function(e) {
+                e.preventDefault();
+                const contentType = $(this).find('span').text().toLowerCase().replace(' ', '');
+                showContent(contentType);
+            });
+
+            // Cosplay submenu toggle
+            $('#cosplayMenu').click(function(e){
+                e.preventDefault();
+                $('#cosplaySubmenu').slideToggle(150);
+                $(this).toggleClass('open');
+            });
         });
     </script>
 </body>

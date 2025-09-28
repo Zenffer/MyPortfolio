@@ -6,7 +6,13 @@
     var intro = document.querySelector('.intro');
     var mainEl = document.querySelector('main');
     var indicator = document.querySelector('.scroll-indicator');
-    if (!mainEl || !intro) return;
+    if (!mainEl) return;
+    
+    // If no intro section, make main visible immediately
+    if (!intro) {
+      mainEl.classList.add('visible');
+      return;
+    }
 
     function onScroll() {
       var introRect = intro.getBoundingClientRect();

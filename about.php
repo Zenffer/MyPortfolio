@@ -13,18 +13,6 @@
 <body>
     <div class="cursor-circle" id="cursor-circle"></div>
 
-    <!-- Hero Section with Animated Background -->
-    <section class="intro">
-      <canvas id="intro-particles"></canvas>
-      <h1 class="name">About Me</h1>
-      <h2 class="title">Developer • Photographer • Cosplayer</h2>
-      <div class="scroll-indicator">
-        <svg width="96" height="70" viewBox="0 0 60 40" fill="none">
-          <polyline points="15,18 30,32 45,18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-    </section>
-
     <main>
         <nav class="main-nav">
             <div class="logo">JEROBOAM OLIVEROS</div>

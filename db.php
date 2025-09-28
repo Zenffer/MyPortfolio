@@ -13,6 +13,10 @@ $db_config = [
     'charset' => 'utf8mb4'
 ];
 
+// Error reporting for development
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Create database connection
 function createConnection($config, $use_database = false) {
     $dsn = "mysql:host={$config['host']};charset={$config['charset']}";
@@ -24,11 +28,13 @@ function createConnection($config, $use_database = false) {
         $pdo = new PDO($dsn, $config['username'], $config['password'], [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false
+            PDO::ATTR_EMULATE_PREPARES => false,
+            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
         ]);
         return $pdo;
     } catch (PDOException $e) {
-        die("Database connection failed: " . $e->getMessage());
+        error_log("Database connection failed: " . $e->getMessage());
+        throw new Exception("Database connection failed: " . $e->getMessage());
     }
 }
 
@@ -36,9 +42,11 @@ function createConnection($config, $use_database = false) {
 function databaseExists($config) {
     try {
         $pdo = createConnection($config, false);
-        $stmt = $pdo->query("SHOW DATABASES LIKE '{$config['database']}'");
+        $stmt = $pdo->prepare("SHOW DATABASES LIKE ?");
+        $stmt->execute([$config['database']]);
         return $stmt->rowCount() > 0;
     } catch (PDOException $e) {
+        error_log("Database check failed: " . $e->getMessage());
         return false;
     }
 }
@@ -47,10 +55,12 @@ function databaseExists($config) {
 function createDatabase($config) {
     try {
         $pdo = createConnection($config, false);
-        $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$config['database']}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+        $sql = "CREATE DATABASE IF NOT EXISTS `{$config['database']}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+        $pdo->exec($sql);
         return true;
     } catch (PDOException $e) {
-        die("Failed to create database: " . $e->getMessage());
+        error_log("Failed to create database: " . $e->getMessage());
+        throw new Exception("Failed to create database: " . $e->getMessage());
     }
 }
 
@@ -135,7 +145,8 @@ function createTables($config) {
         $pdo->exec($testimonials_sql);
         return true;
     } catch (PDOException $e) {
-        die("Failed to create tables: " . $e->getMessage());
+        error_log("Failed to create tables: " . $e->getMessage());
+        throw new Exception("Failed to create tables: " . $e->getMessage());
     }
 }
 
@@ -161,7 +172,8 @@ function createDefaultAdmin($config) {
         $stmt->execute([$username, $hashed_password, 'admin@portfolio.com']);
         return true;
     } catch (PDOException $e) {
-        die("Failed to create default admin: " . $e->getMessage());
+        error_log("Failed to create default admin: " . $e->getMessage());
+        throw new Exception("Failed to create default admin: " . $e->getMessage());
     }
 }
 
@@ -189,7 +201,8 @@ function insertDefaultSettings($config) {
         }
         return true;
     } catch (PDOException $e) {
-        die("Failed to insert default settings: " . $e->getMessage());
+        error_log("Failed to insert default settings: " . $e->getMessage());
+        throw new Exception("Failed to insert default settings: " . $e->getMessage());
     }
 }
 
@@ -243,7 +256,8 @@ function insertDefaultContent($config) {
         }
         return true;
     } catch (PDOException $e) {
-        die("Failed to insert default content: " . $e->getMessage());
+        error_log("Failed to insert default content: " . $e->getMessage());
+        throw new Exception("Failed to insert default content: " . $e->getMessage());
     }
 }
 
@@ -265,33 +279,39 @@ function insertDefaultTestimonials($config) {
         }
         return true;
     } catch (PDOException $e) {
-        die("Failed to insert default testimonials: " . $e->getMessage());
+        error_log("Failed to insert default testimonials: " . $e->getMessage());
+        throw new Exception("Failed to insert default testimonials: " . $e->getMessage());
     }
 }
 
 // Main initialization function
 function initializeDatabase($config) {
-    // Check if database exists
-    if (!databaseExists($config)) {
-        createDatabase($config);
+    try {
+        // Check if database exists
+        if (!databaseExists($config)) {
+            createDatabase($config);
+        }
+        
+        // Create tables
+        createTables($config);
+        
+        // Create default admin
+        createDefaultAdmin($config);
+        
+        // Insert default settings
+        insertDefaultSettings($config);
+        
+        // Insert default content
+        insertDefaultContent($config);
+        
+        // Insert default testimonials
+        insertDefaultTestimonials($config);
+        
+        return true;
+    } catch (Exception $e) {
+        error_log("Database initialization failed: " . $e->getMessage());
+        throw $e;
     }
-    
-    // Create tables
-    createTables($config);
-    
-    // Create default admin
-    createDefaultAdmin($config);
-    
-    // Insert default settings
-    insertDefaultSettings($config);
-    
-    // Insert default content
-    insertDefaultContent($config);
-    
-    // Insert default testimonials
-    insertDefaultTestimonials($config);
-    
-    return true;
 }
 
 // Get database connection for use in other files
@@ -299,8 +319,67 @@ function getDatabaseConnection($config) {
     return createConnection($config, true);
 }
 
+// Utility function to get site setting
+function getSiteSetting($config, $key, $default = null) {
+    try {
+        $pdo = getDatabaseConnection($config);
+        $stmt = $pdo->prepare("SELECT setting_value FROM site_settings WHERE setting_key = ?");
+        $stmt->execute([$key]);
+        $result = $stmt->fetch();
+        return $result ? $result['setting_value'] : $default;
+    } catch (Exception $e) {
+        error_log("Failed to get site setting: " . $e->getMessage());
+        return $default;
+    }
+}
+
+// Utility function to update site setting
+function updateSiteSetting($config, $key, $value) {
+    try {
+        $pdo = getDatabaseConnection($config);
+        $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
+        $stmt->execute([$key, $value]);
+        return true;
+    } catch (Exception $e) {
+        error_log("Failed to update site setting: " . $e->getMessage());
+        return false;
+    }
+}
+
+// Utility function to get page content
+function getPageContent($config, $page_name, $section, $default = null) {
+    try {
+        $pdo = getDatabaseConnection($config);
+        $stmt = $pdo->prepare("SELECT content FROM page_content WHERE page_name = ? AND section = ?");
+        $stmt->execute([$page_name, $section]);
+        $result = $stmt->fetch();
+        return $result ? $result['content'] : $default;
+    } catch (Exception $e) {
+        error_log("Failed to get page content: " . $e->getMessage());
+        return $default;
+    }
+}
+
+// Utility function to update page content
+function updatePageContent($config, $page_name, $section, $content) {
+    try {
+        $pdo = getDatabaseConnection($config);
+        $stmt = $pdo->prepare("INSERT INTO page_content (page_name, section, content) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE content = VALUES(content)");
+        $stmt->execute([$page_name, $section, $content]);
+        return true;
+    } catch (Exception $e) {
+        error_log("Failed to update page content: " . $e->getMessage());
+        return false;
+    }
+}
+
 // Run initialization if this file is accessed directly
 if (basename($_SERVER['PHP_SELF']) === 'db.php') {
-    initializeDatabase($db_config);
+    try {
+        initializeDatabase($db_config);
+        echo "Database initialized successfully!";
+    } catch (Exception $e) {
+        echo "Database initialization failed: " . $e->getMessage();
+    }
 }
 ?>
