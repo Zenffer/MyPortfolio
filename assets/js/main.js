@@ -171,23 +171,59 @@
     var circle = document.getElementById('cursor-circle');
     if (!circle) return;
     var cx = -100, cy = -100, tx = -100, ty = -100, visible = false;
+    var cursorEnabled = true;
     window.__cursorCircleX = cx; window.__cursorCircleY = cy;
+    
     function onMove(e) {
+      if (!cursorEnabled) return;
       tx = e.clientX; ty = e.clientY;
       if (!visible) { circle.style.opacity = '1'; visible = true; }
     }
+    
     function onLeave() {
       visible = false; circle.style.opacity = '0';
       window.__cursorCircleX = -100; window.__cursorCircleY = -100;
     }
+    
     function raf() {
+      if (!cursorEnabled) {
+        requestAnimationFrame(raf);
+        return;
+      }
       cx += (tx - cx) * 0.2; cy += (ty - cy) * 0.2;
       circle.style.left = cx + 'px'; circle.style.top = cy + 'px';
       window.__cursorCircleX = cx; window.__cursorCircleY = cy;
       requestAnimationFrame(raf);
     }
+    
+    // Disable cursor when main section is visible
+    function checkMainVisibility() {
+      var mainEl = document.querySelector('main');
+      if (mainEl && mainEl.classList.contains('visible')) {
+        cursorEnabled = false;
+        circle.style.opacity = '0';
+        window.__cursorCircleX = -100; window.__cursorCircleY = -100;
+      } else {
+        cursorEnabled = true;
+      }
+    }
+    
+    // Check for touch devices and disable cursor
+    function checkTouchDevice() {
+      if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+        cursorEnabled = false;
+        circle.style.display = 'none';
+        return;
+      }
+    }
+    
     document.addEventListener('mousemove', onMove, { passive: true });
     document.addEventListener('mouseleave', onLeave);
+    window.addEventListener('scroll', checkMainVisibility, { passive: true });
+    
+    // Initial checks
+    checkTouchDevice();
+    checkMainVisibility();
     raf();
   }
 
