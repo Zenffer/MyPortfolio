@@ -265,6 +265,17 @@ function insertDefaultContent($config) {
 function insertDefaultTestimonials($config) {
     $pdo = createConnection($config, true);
     
+    // If table already has rows, skip seeding to avoid duplicates
+    try {
+        $count = (int)$pdo->query("SELECT COUNT(*) FROM testimonials")->fetchColumn();
+        if ($count > 0) {
+            return true;
+        }
+    } catch (PDOException $e) {
+        error_log("Failed counting testimonials: " . $e->getMessage());
+        // Continue to attempt inserts; if table missing it will be created by createTables
+    }
+
     $default_testimonials = [
         ['Alex Rivera', 'Product Manager, Northstar', 'Jeroboam exceeded expectations. Fast, communicative, and the final work was stunning.', 1],
         ['Mika Santos', 'Art Director', 'A rare mix of technical skill and creative eye. Our shoot turned out incredible.', 2],

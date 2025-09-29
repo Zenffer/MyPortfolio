@@ -1,3 +1,13 @@
+<?php
+require_once 'db.php';
+
+// Use shared DB config
+$config = $db_config;
+
+// Fetch page content
+$kw_title = getPageContent($config, 'kind-words', 'page_title', 'What people say');
+$kw_desc  = getPageContent($config, 'kind-words', 'page_description', 'Testimonials gathered from projects, collaborations, and commissions.');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,37 +40,16 @@
 
         <section id="kind-words" class="kind-words-section">
             <div class="kw-header">
-                <h1>What people say</h1>
-                <p>Testimonials gathered from projects, collaborations, and commissions.</p>
+                <h1><?php echo htmlspecialchars($kw_title); ?></h1>
+                <p><?php echo htmlspecialchars($kw_desc); ?></p>
             </div>
 
-            <div class="kw-grid">
-                <article class="kw-card">
-                    <p class="kw-quote">“Jeroboam exceeded expectations. Fast, communicative, and the final work was stunning.”</p>
+            <div id="kw-grid" class="kw-grid" aria-live="polite">
+                <article class="kw-card" id="kw-loading">
+                    <p class="kw-quote">Loading testimonials…</p>
                     <div class="kw-meta">
-                        <span class="kw-name">Alex Rivera</span>
-                        <span class="kw-role">Product Manager, Northstar</span>
-                    </div>
-                </article>
-                <article class="kw-card">
-                    <p class="kw-quote">“A rare mix of technical skill and creative eye. Our shoot turned out incredible.”</p>
-                    <div class="kw-meta">
-                        <span class="kw-name">Mika Santos</span>
-                        <span class="kw-role">Art Director</span>
-                    </div>
-                </article>
-                <article class="kw-card">
-                    <p class="kw-quote">“Collaborating with Jerome was effortless. Clear direction, great energy, beautiful results.”</p>
-                    <div class="kw-meta">
-                        <span class="kw-name">Kenji Tan</span>
-                        <span class="kw-role">Cosplay Model</span>
-                    </div>
-                </article>
-                <article class="kw-card">
-                    <p class="kw-quote">“Delivers on time with polished work. Would happily work together again.”</p>
-                    <div class="kw-meta">
-                        <span class="kw-name">Lara Gomez</span>
-                        <span class="kw-role">Photographer</span>
+                        <span class="kw-name">Please wait</span>
+                        <span class="kw-role"></span>
                     </div>
                 </article>
             </div>
@@ -70,6 +59,47 @@
     <footer>
         <p>&copy; <?php echo date("Y"); ?> My Portfolio. All rights reserved.</p>
     </footer>
+    <script>
+    (function(){
+        const grid = document.getElementById('kw-grid');
+        if (!grid) return;
+
+        fetch('api/testimonials.php', { credentials: 'same-origin' })
+          .then(r => r.json())
+          .then(json => {
+            grid.innerHTML = '';
+            if (!json || !json.ok || !Array.isArray(json.data) || json.data.length === 0) {
+              grid.innerHTML = '<article class="kw-card"><p class="kw-quote">No testimonials yet.</p><div class="kw-meta"><span class="kw-name"></span><span class="kw-role"></span></div></article>';
+              return;
+            }
+            json.data.forEach(item => {
+              const card = document.createElement('article');
+              card.className = 'kw-card';
+              card.innerHTML = `
+                <p class="kw-quote">${escapeHtml(item.quote)}</p>
+                <div class="kw-meta">
+                    <span class="kw-name">${escapeHtml(item.name)}</span>
+                    <span class="kw-role">${escapeHtml(item.role || '')}</span>
+                </div>
+              `;
+              grid.appendChild(card);
+            });
+          })
+          .catch(() => {
+            grid.innerHTML = '<article class="kw-card"><p class="kw-quote">Failed to load testimonials.</p><div class="kw-meta"><span class="kw-name"></span><span class="kw-role"></span></div></article>';
+          });
+
+        function escapeHtml(str){
+          if (str == null) return '';
+          return String(str)
+            .replace(/&/g,'&amp;')
+            .replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;')
+            .replace(/'/g,'&#039;');
+        }
+    })();
+    </script>
 </body>
 </html>
 

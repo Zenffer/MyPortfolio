@@ -20,6 +20,7 @@
                 <a href="index.php">PROJECTS</a>
                 <a href="photography.php">PHOTOGRAPHY</a>
                 <a href="cosplay.php">COSPLAY</a>
+                <a href="kind-words.php">KIND WORDS</a>
                 <a href="about.php" class="active">ABOUT</a>
                 <a href="contact.php">CONTACT</a>
                 <a href="https://www.linkedin.com" target="_blank" rel="noopener" class="icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
