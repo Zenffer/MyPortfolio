@@ -1,3 +1,26 @@
+<?php
+require_once 'db.php';
+$config = $db_config;
+
+$owner_name = getSiteSetting($config, 'owner_name', 'Jerome');
+$display_name = getSiteSetting($config, 'display_name', $owner_name);
+$owner_title = getSiteSetting($config, 'owner_title', 'Developer • Photographer • Cosplayer');
+$profile_image = getSiteSetting($config, 'profile_image', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop');
+$bio = getSiteSetting($config, 'bio', "I craft clean, performant web experiences and tell stories through images and character work. With a background that blends software development, photography, and cosplay, I enjoy projects that balance technical depth with creative polish.");
+$bio_secondary = getSiteSetting($config, 'bio_secondary', "When I'm not shipping features, I'm experimenting with lighting setups, sewing details, or planning the next shoot.");
+$skills_csv = getSiteSetting($config, 'skills', 'HTML/CSS, JavaScript, PHP, jQuery, Responsive UI, Photography, Lighting, Cosplay Fabrication');
+$tools_csv = getSiteSetting($config, 'tools', 'VS Code, Git, Figma, Lightroom, Photoshop');
+$resume_url = getSiteSetting($config, 'resume_url', '#');
+
+function renderTagList($csv) {
+    $items = array_filter(array_map('trim', explode(',', (string)$csv)));
+    $out = '';
+    foreach ($items as $it) {
+        $out .= '<li>' . htmlspecialchars($it) . '</li>';
+    }
+    return $out;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,31 +56,30 @@
                 <div class="about-bio">
                     <div class="profile-section">
                         <div class="profile-picture">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" alt="Profile Picture" id="profile-img">
+                            <img src="<?php echo htmlspecialchars($profile_image); ?>" alt="Profile Picture" id="profile-img">
                         </div>
                         <div class="profile-info">
-                            <h1>Hi, I'm Jerome.</h1>
-                            <p>I craft clean, performant web experiences and tell stories through images and character work. With a background that blends software development, photography, and cosplay, I enjoy projects that balance technical depth with creative polish.</p>
-                            <p>When I'm not shipping features, I'm experimenting with lighting setups, sewing details, or planning the next shoot.</p>
+                            <h1>Hi, I'm <?php echo htmlspecialchars($display_name); ?>.</h1>
+                            <p><?php echo htmlspecialchars($bio); ?></p>
+                            <p><?php echo htmlspecialchars($bio_secondary); ?></p>
                         </div>
                     </div>
                     <div class="about-actions">
                         <a class="btn" href="contact.php">Get in touch</a>
-                        <a class="btn ghost" href="#" onclick="alert('Resume coming soon!'); return false;">Download résumé</a>
+                        <a class="btn ghost" href="<?php echo htmlspecialchars($resume_url); ?>" target="_blank" rel="noopener">Download résumé</a>
                     </div>
                 </div>
                 <div class="about-aside">
                     <div class="about-card">
                         <h2>Skills</h2>
                         <ul class="tag-list">
-                            <li>HTML/CSS</li><li>JavaScript</li><li>PHP</li><li>jQuery</li>
-                            <li>Responsive UI</li><li>Photography</li><li>Lighting</li><li>Cosplay Fabrication</li>
+                            <?php echo renderTagList($skills_csv); ?>
                         </ul>
                     </div>
                     <div class="about-card">
                         <h2>Tools</h2>
                         <ul class="tag-list">
-                            <li>VS Code</li><li>Git</li><li>Figma</li><li>Lightroom</li><li>Photoshop</li>
+                            <?php echo renderTagList($tools_csv); ?>
                         </ul>
                     </div>
                 </div>

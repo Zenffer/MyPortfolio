@@ -448,7 +448,7 @@ $pdo = getDatabaseConnection($db_config);
                                     </div>
                                     <div class="upload-controls">
                                         <input type="file" id="profileUpload" accept="image/*" style="display: none;">
-                                        <button class="btn btn-secondary" onclick="document.getElementById('profileUpload').click()">Change Picture</button>
+                                        <button id="profileUploadBtn" class="btn btn-secondary">Change Picture</button>
                                         <p style="color: #A1A69C; font-size: 12px; margin-top: 8px;">Recommended: 200x200px, JPG or PNG</p>
                                     </div>
                                 </div>
@@ -460,21 +460,21 @@ $pdo = getDatabaseConnection($db_config);
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label>Full Name</label>
-                                        <input type="text" value="Jeroboam Oliveros">
+                                        <input type="text" name="full_name" value="Jeroboam Oliveros">
                                     </div>
                                     <div class="form-group">
                                         <label>Display Name</label>
-                                        <input type="text" value="Jerome">
+                                        <input type="text" name="display_name" value="Jerome">
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label>Title/Profession</label>
-                                        <input type="text" value="Developer • Photographer • Cosplayer">
+                                        <input type="text" name="title" value="Developer • Photographer • Cosplayer">
                                     </div>
                                     <div class="form-group">
                                         <label>Location</label>
-                                        <input type="text" value="Your City, Country">
+                                        <input type="text" name="location" value="Your City, Country">
                                     </div>
                                 </div>
                             </div>
@@ -484,11 +484,11 @@ $pdo = getDatabaseConnection($db_config);
                                 <h3>About Me</h3>
                                 <div class="form-group">
                                     <label>Bio/Description</label>
-                                    <textarea rows="4" placeholder="Tell people about yourself...">I craft clean, performant web experiences and tell stories through images and character work. With a background that blends software development, photography, and cosplay, I enjoy projects that balance technical depth with creative polish.</textarea>
+                                    <textarea rows="4" name="bio" placeholder="Tell people about yourself...">I craft clean, performant web experiences and tell stories through images and character work. With a background that blends software development, photography, and cosplay, I enjoy projects that balance technical depth with creative polish.</textarea>
                                 </div>
                                 <div class="form-group">
                                     <label>Additional Info</label>
-                                    <textarea rows="3" placeholder="Additional details about yourself...">When I'm not shipping features, I'm experimenting with lighting setups, sewing details, or planning the next shoot.</textarea>
+                                    <textarea rows="3" name="bio_secondary" placeholder="Additional details about yourself...">When I'm not shipping features, I'm experimenting with lighting setups, sewing details, or planning the next shoot.</textarea>
             </div>
         </div>
         
@@ -498,11 +498,11 @@ $pdo = getDatabaseConnection($db_config);
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label>Skills (comma separated)</label>
-                                        <input type="text" value="HTML/CSS, JavaScript, PHP, jQuery, Responsive UI, Photography, Lighting, Cosplay Fabrication">
+                                        <input type="text" name="skills" value="HTML/CSS, JavaScript, PHP, jQuery, Responsive UI, Photography, Lighting, Cosplay Fabrication">
                                     </div>
                                     <div class="form-group">
                                         <label>Tools (comma separated)</label>
-                                        <input type="text" value="VS Code, Git, Figma, Lightroom, Photoshop">
+                                        <input type="text" name="tools" value="VS Code, Git, Figma, Lightroom, Photoshop">
                                     </div>
                                 </div>
             </div>
@@ -510,7 +510,7 @@ $pdo = getDatabaseConnection($db_config);
                             <!-- Action Buttons -->
                             <div class="action-buttons">
                                 <button class="btn btn-secondary">Preview</button>
-                                <button class="btn btn-primary">Save Changes</button>
+                                <button id="profile-save" class="btn btn-primary">Save Changes</button>
                             </div>
                         </div>
                     </div>
@@ -859,6 +859,49 @@ $pdo = getDatabaseConnection($db_config);
                 e.preventDefault();
                 window.open('kind-words.php', '_blank');
             });
+
+            // ================= PROFILE MANAGEMENT =================
+            loadProfileSettings();
+
+            $('#profileLayout').on('click', '#profileUploadBtn', function(e){
+                e.preventDefault();
+                const input = document.getElementById('profileUpload');
+                if (input) input.click();
+            });
+
+            $('#profileUpload').onchange = function(){
+                const file = this.files && this.files[0];
+                if (!file) return;
+                const form = new FormData();
+                form.append('file', file);
+                fetch('api/admin/upload_profile_image.php', { method: 'POST', credentials: 'same-origin', body: form })
+                  .then(r=>r.json()).then(resp=>{
+                      if (resp && resp.ok) {
+                          const img = document.querySelector('#profileLayout .current-picture img');
+                          if (img) img.src = resp.url;
+                          saveSettings({ profile_image: resp.url });
+                      } else {
+                          alert('Failed to upload image');
+                      }
+                  }).catch(()=>alert('Failed to upload image'));
+            };
+
+            $('#profileLayout').on('click', '#profile-save', function(e){
+                e.preventDefault();
+                const q = sel => document.querySelector('#profileLayout ' + sel);
+                const updates = {
+                    owner_name: (q('input[name="full_name"]')?.value || '').trim(),
+                    display_name: (q('input[name="display_name"]')?.value || '').trim(),
+                    owner_title: (q('input[name="title"]')?.value || '').trim(),
+                    location: (q('input[name="location"]')?.value || '').trim(),
+                    bio: (q('textarea[name="bio"]')?.value || '').trim(),
+                    bio_secondary: (q('textarea[name="bio_secondary"]')?.value || '').trim(),
+                    skills: (q('input[name="skills"]')?.value || '').trim(),
+                    tools: (q('input[name="tools"]')?.value || '').trim()
+                };
+                if (!updates.owner_name) { alert('Full Name is required'); return; }
+                saveSettings(updates).then(ok => alert(ok ? 'Saved' : 'Failed to save'));
+            });
         });
 
         // Fetch testimonials into dashboard cards
@@ -877,6 +920,7 @@ $pdo = getDatabaseConnection($db_config);
                   }
                   json.data.forEach(item => {
                       const card = document.createElement('div');
+                      card.className = 'dashboard-testimonial-card';
                       card.style.background = '#08090D';
                       card.style.border = '1px solid #A1A69C';
                       card.style.borderRadius = '8px';
@@ -901,9 +945,12 @@ $pdo = getDatabaseConnection($db_config);
                   container.querySelectorAll('.btn-edit-testimonial').forEach(btn => {
                       btn.addEventListener('click', function(){
                           const id = Number(this.getAttribute('data-id'));
-                          const card = this.closest('div');
-                          const currentText = card.querySelector('p').textContent;
-                          const nameRoleText = card.querySelector('span').textContent;
+                          const card = this.closest('.dashboard-testimonial-card');
+                          if (!card) return;
+                          const quoteEl = card.querySelector('p');
+                          const nameSpan = card.querySelector('span');
+                          const currentText = quoteEl ? quoteEl.textContent : '';
+                          const nameRoleText = nameSpan ? nameSpan.textContent : '';
                           const parts = nameRoleText.split(' • ');
                           const currentName = parts[0] || '';
                           const currentRole = parts[1] || '';
@@ -961,6 +1008,35 @@ $pdo = getDatabaseConnection($db_config);
                 credentials: 'same-origin',
                 body: JSON.stringify({ page, section, content })
             }).then(r=>r.json()).catch(()=>({ ok:false }));
+        }
+
+        // ===== Profile helpers =====
+        function loadProfileSettings(){
+            fetch('api/admin/settings.php?keys=owner_name,display_name,owner_title,location,bio,bio_secondary,skills,tools,profile_image', { credentials: 'same-origin' })
+              .then(r=>r.json()).then(resp=>{
+                  if (!resp || !resp.ok) return;
+                  const d = resp.data || {};
+                  const q = sel => document.querySelector('#profileLayout ' + sel);
+                  if (q('input[name="full_name"]')) q('input[name="full_name"]').value = d.owner_name || '';
+                  if (q('input[name="display_name"]')) q('input[name="display_name"]').value = (d.display_name || d.owner_name || '');
+                  if (q('input[name="title"]')) q('input[name="title"]').value = d.owner_title || '';
+                  if (q('input[name="location"]')) q('input[name="location"]').value = d.location || '';
+                  if (q('textarea[name="bio"]')) q('textarea[name="bio"]').value = d.bio || '';
+                  if (q('textarea[name="bio_secondary"]')) q('textarea[name="bio_secondary"]').value = d.bio_secondary || '';
+                  if (q('input[name="skills"]')) q('input[name="skills"]').value = d.skills || '';
+                  if (q('input[name="tools"]')) q('input[name="tools"]').value = d.tools || '';
+                  const img = document.querySelector('#profileLayout .current-picture img');
+                  if (img && d.profile_image) img.src = d.profile_image;
+              });
+        }
+
+        function saveSettings(updates){
+            return fetch('api/admin/settings.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ updates })
+            }).then(r=>r.json()).then(resp=>!!(resp && resp.ok)).catch(()=>false);
         }
     </script>
 </body>

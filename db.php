@@ -183,7 +183,7 @@ function insertDefaultSettings($config) {
     
     $default_settings = [
         'site_name' => 'My Portfolio',
-        'owner_name' => 'Jerome',
+        'owner_name' => 'Jeroboam T. Oliveros',
         'owner_title' => 'Developer, Photographer & Cosplayer',
         'profile_image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop',
         'bio' => 'I craft clean, performant web experiences and tell stories through images and character work. With a background that blends software development, photography, and cosplay, I enjoy projects that balance technical depth with creative polish.',
@@ -191,7 +191,10 @@ function insertDefaultSettings($config) {
         'email' => 'hello@example.com',
         'linkedin' => 'https://www.linkedin.com',
         'instagram' => 'https://www.instagram.com',
-        'resume_url' => '#'
+        'resume_url' => '#',
+        // Sample profile data
+        'skills' => 'HTML/CSS, JavaScript (ES6+), PHP, MySQL, jQuery, REST APIs, Responsive UI, Accessibility (a11y), SEO, Photography, Studio Lighting, Cosplay Fabrication',
+        'tools' => 'VS Code, Git & GitHub, Docker, Postman, Figma, Adobe Photoshop, Adobe Lightroom'
     ];
     
     try {
@@ -230,21 +233,15 @@ function insertDefaultContent($config) {
         ['cosplay', 'page_description', 'Selected costumes and characters from recent events and shoots.'],
         
         // Kind Words page
-        ['kind-words', 'hero_title', 'Kind Words'],
-        ['kind-words', 'hero_subtitle', 'Notes from clients and collaborators.'],
         ['kind-words', 'page_title', 'What people say'],
         ['kind-words', 'page_description', 'Testimonials gathered from projects, collaborations, and commissions.'],
         
         // About page
-        ['about', 'hero_title', 'About Me'],
-        ['about', 'hero_subtitle', 'Developer • Photographer • Cosplayer'],
         ['about', 'bio_title', 'Hi, I\'m Jerome.'],
         ['about', 'skills_title', 'Skills'],
         ['about', 'tools_title', 'Tools'],
         
         // Contact page
-        ['contact', 'hero_title', 'Get In Touch'],
-        ['contact', 'hero_subtitle', 'Let\'s build something great.'],
         ['contact', 'page_title', 'Contact'],
         ['contact', 'page_description', 'Have a project in mind, need photos, or want to collaborate? Send a message and I\'ll get back to you.']
     ];
