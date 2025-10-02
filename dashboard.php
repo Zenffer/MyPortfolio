@@ -448,8 +448,17 @@ $pdo = getDatabaseConnection($db_config);
                                     </div>
                                     <div class="upload-controls">
                                         <input type="file" id="profileUpload" accept="image/*" style="display: none;">
-                                        <button id="profileUploadBtn" class="btn btn-secondary">Change Picture</button>
-                                        <p style="color: #A1A69C; font-size: 12px; margin-top: 8px;">Recommended: 200x200px, JPG or PNG</p>
+                                        <button id="profileUploadBtn" class="btn btn-secondary">Upload New Picture</button>
+                                        <button id="selectExistingBtn" class="btn btn-outline">Select Existing</button>
+                                        <p style="color: #A1A69C; font-size: 12px; margin-top: 8px;">Recommended: 200x200px, JPG or PNG (Max 5MB)</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Available Images -->
+                                <div id="availableImages" class="available-images" style="display: none; margin-top: 20px;">
+                                    <h4>Available Profile Images</h4>
+                                    <div id="imagesList" class="images-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 10px;">
+                                        <!-- Images will be loaded here -->
                                     </div>
                                 </div>
                             </div>
@@ -863,28 +872,25 @@ $pdo = getDatabaseConnection($db_config);
             // ================= PROFILE MANAGEMENT =================
             loadProfileSettings();
 
+            // Upload new image (using test function)
             $('#profileLayout').on('click', '#profileUploadBtn', function(e){
                 e.preventDefault();
-                const input = document.getElementById('profileUpload');
-                if (input) input.click();
+                console.log('Upload button clicked - using test function');
+                testUploadFunction();
             });
 
-            $('#profileUpload').onchange = function(){
-                const file = this.files && this.files[0];
-                if (!file) return;
-                const form = new FormData();
-                form.append('file', file);
-                fetch('api/admin/upload_profile_image.php', { method: 'POST', credentials: 'same-origin', body: form })
-                  .then(r=>r.json()).then(resp=>{
-                      if (resp && resp.ok) {
-                          const img = document.querySelector('#profileLayout .current-picture img');
-                          if (img) img.src = resp.url;
-                          saveSettings({ profile_image: resp.url });
-                      } else {
-                          alert('Failed to upload image');
-                      }
-                  }).catch(()=>alert('Failed to upload image'));
-            };
+            // Show/hide available images
+            $('#profileLayout').on('click', '#selectExistingBtn', function(e){
+                e.preventDefault();
+                const availableImages = document.getElementById('availableImages');
+                if (availableImages.style.display === 'none') {
+                    loadAvailableImages();
+                    availableImages.style.display = 'block';
+                } else {
+                    availableImages.style.display = 'none';
+                }
+            });
+
 
             $('#profileLayout').on('click', '#profile-save', function(e){
                 e.preventDefault();
@@ -1037,6 +1043,185 @@ $pdo = getDatabaseConnection($db_config);
                 credentials: 'same-origin',
                 body: JSON.stringify({ updates })
             }).then(r=>r.json()).then(resp=>!!(resp && resp.ok)).catch(()=>false);
+        }
+
+        // Load available profile images
+        function loadAvailableImages(){
+            fetch('api/admin/list_profile_images.php', { credentials: 'same-origin' })
+              .then(r=>r.json()).then(resp=>{
+                  if (resp && resp.ok) {
+                      const imagesList = document.getElementById('imagesList');
+                      if (imagesList) {
+                          imagesList.innerHTML = '';
+                          resp.images.forEach(img => {
+                              const imgDiv = document.createElement('div');
+                              imgDiv.className = 'image-item';
+                              imgDiv.style.cssText = 'position: relative; cursor: pointer; border: 2px solid transparent; border-radius: 8px; overflow: hidden;';
+                              
+                              // Add close icon for uploaded images (not default)
+                              const closeIcon = !img.is_default ? `
+                                  <div class="close-icon" style="position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; background: rgba(255,0,0,0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10;" onclick="event.stopPropagation(); removeImage('${img.filename}')">
+                                      <img src="assets/js/icons/closeIcon.svg" style="width: 12px; height: 12px; filter: invert(1);" alt="Remove">
+                                  </div>
+                              ` : '';
+                              
+                              imgDiv.innerHTML = `
+                                  <img src="${img.url}" alt="${img.filename}" style="width: 100%; height: 80px; object-fit: cover;">
+                                  <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; padding: 4px; font-size: 10px; text-align: center;">
+                                      ${img.is_default ? 'Default' : 'Uploaded'}
+                                  </div>
+                                  ${closeIcon}
+                              `;
+                              imgDiv.onclick = () => selectImage(img.url);
+                              imagesList.appendChild(imgDiv);
+                          });
+                      }
+                  }
+              }).catch(()=>console.log('Failed to load images'));
+        }
+
+        // Select an existing image
+        function selectImage(imageUrl){
+            const img = document.querySelector('#profileLayout .current-picture img');
+            if (img) img.src = imageUrl;
+            saveSettings({ profile_image: imageUrl }).then(ok => {
+                if (ok) {
+                    alert('Profile image updated successfully!');
+                    document.getElementById('availableImages').style.display = 'none';
+                } else {
+                    alert('Failed to update profile image');
+                }
+            });
+        }
+
+        // Remove an uploaded image
+        function removeImage(filename){
+            if (!confirm('Are you sure you want to delete this image? This action cannot be undone.')) {
+                return;
+            }
+            
+            console.log('Removing image:', filename);
+            
+            fetch('api/admin/remove_profile_image.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ filename: filename })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    console.log('Image removed successfully');
+                    alert('Image deleted successfully!');
+                    // Refresh the available images
+                    loadAvailableImages();
+                } else {
+                    console.error('Failed to remove image:', data.error);
+                    alert('Failed to delete image: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error removing image:', error);
+                alert('Failed to delete image: ' + error.message);
+            });
+        }
+
+        // Main upload function with comprehensive testing
+        function testUploadFunction(){
+            console.log('=== PROFILE IMAGE UPLOAD ===');
+            
+            // Test 1: Check authentication
+            fetch('api/admin/settings.php?keys=profile_image', { credentials: 'same-origin' })
+              .then(r => r.json())
+              .then(resp => {
+                  console.log('Auth test result:', resp);
+                  if (resp && resp.ok) {
+                      console.log('✅ Authentication: OK');
+                      testUploadAPI();
+                  } else {
+                      console.log('❌ Authentication: FAILED');
+                      alert('Authentication failed. Please login first.');
+                  }
+              })
+              .catch(error => {
+                  console.log('❌ Auth test error:', error);
+                  alert('Authentication test failed: ' + error.message);
+              });
+        }
+
+        function testUploadAPI(){
+            console.log('Processing file upload...');
+            
+            // Create a test file input
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.style.display = 'none';
+            document.body.appendChild(fileInput);
+            
+            fileInput.onchange = function(){
+                const file = this.files[0];
+                if (!file) {
+                    console.log('No file selected');
+                    return;
+                }
+                
+                console.log('Testing upload with file:', file.name, 'Size:', file.size);
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                fetch('api/admin/upload_profile_image.php', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    body: formData
+                })
+                .then(response => {
+                    console.log('Upload response status:', response.status);
+                    return response.text();
+                })
+                .then(text => {
+                    console.log('Raw response:', text);
+                    try {
+                        const data = JSON.parse(text);
+                        console.log('Parsed response:', data);
+                        if (data.ok) {
+                            console.log('✅ Upload test: SUCCESS');
+                            
+                            // Update the profile image display
+                            const img = document.querySelector('#profileLayout .current-picture img');
+                            if (img) {
+                                img.src = data.url;
+                                console.log('Profile image updated to:', data.url);
+                            }
+                            
+                            // Save to database
+                            saveSettings({ profile_image: data.url });
+                            
+                            // Refresh available images
+                            loadAvailableImages();
+                            
+                            alert('Image uploaded successfully!');
+                        } else {
+                            console.log('❌ Upload test: FAILED -', data.error);
+                            alert('Upload failed: ' + data.error);
+                        }
+                    } catch (e) {
+                        console.log('❌ Response parsing error:', e);
+                        console.log('Raw response was:', text);
+                        alert('Upload test failed - invalid response');
+                    }
+                })
+                .catch(error => {
+                    console.log('❌ Upload test error:', error);
+                    alert('Upload test failed: ' + error.message);
+                })
+                .finally(() => {
+                    document.body.removeChild(fileInput);
+                });
+            };
+            
+            fileInput.click();
         }
     </script>
 </body>

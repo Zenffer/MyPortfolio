@@ -16,8 +16,8 @@
     <!-- Hero Section with Animated Background -->
     <section class="intro">
       <canvas id="intro-particles"></canvas>
-      <h1 class="name">Cosplay Showcase</h1>
-      <h2 class="title">Characters brought to life.</h2>
+      <h1 class="name">Hi, I'm Zenffer</h1>
+      <h2 class="title">Your friendly neighborhood cosplayer.</h2>
       <div class="scroll-indicator">
         <svg width="96" height="70" viewBox="0 0 60 40" fill="none">
           <polyline points="15,18 30,32 45,18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -32,7 +32,7 @@
                 <a href="index.php">PROJECTS</a>
                 <a href="photography.php">PHOTOGRAPHY</a>
                 <a href="cosplay.php" class="active">COSPLAY</a>
-                <a href="index.php#kind-words">KIND WORDS</a>
+                <a href="kind-words.php">KIND WORDS</a>
                 <a href="about.php">ABOUT</a>
                 <a href="contact.php">CONTACT</a>
                 <a href="https://www.linkedin.com" target="_blank" rel="noopener" class="icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>

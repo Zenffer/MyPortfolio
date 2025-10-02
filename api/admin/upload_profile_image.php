@@ -14,9 +14,13 @@ if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
 $config = $db_config;
 
 // Ensure upload dir exists
-$uploadDir = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'uploads';
+$uploadDir = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'profiles';
 if (!is_dir($uploadDir)) {
-    @mkdir($uploadDir, 0755, true);
+    if (!@mkdir($uploadDir, 0755, true)) {
+        http_response_code(500);
+        echo json_encode(['ok' => false, 'error' => 'Failed to create upload directory']);
+        exit;
+    }
 }
 
 if (!isset($_FILES['file'])) {
@@ -28,7 +32,14 @@ if (!isset($_FILES['file'])) {
 $file = $_FILES['file'];
 if ($file['error'] !== UPLOAD_ERR_OK) {
     http_response_code(400);
-    echo json_encode(['ok' => false, 'error' => 'Upload error']);
+    echo json_encode(['ok' => false, 'error' => 'Upload error: ' . $file['error']]);
+    exit;
+}
+
+// Check file size (max 5MB)
+if ($file['size'] > 5 * 1024 * 1024) {
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'File too large. Maximum size is 5MB.']);
     exit;
 }
 
@@ -47,6 +58,23 @@ $ext = $allowed[$mime];
 $basename = 'profile_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
 $destPath = $uploadDir . DIRECTORY_SEPARATOR . $basename;
 
+// Clean up old uploaded profile images (keep profil1.jpg and latest 2 uploads)
+try {
+    $files = glob($uploadDir . DIRECTORY_SEPARATOR . 'profile_*');
+    if (count($files) > 2) {
+        // Sort by modification time, newest first
+        usort($files, function($a, $b) {
+            return filemtime($b) - filemtime($a);
+        });
+        // Remove oldest uploaded files, keeping only the 2 newest (plus profil1.jpg)
+        for ($i = 2; $i < count($files); $i++) {
+            @unlink($files[$i]);
+        }
+    }
+} catch (Exception $e) {
+    // Ignore cleanup errors
+}
+
 if (!move_uploaded_file($file['tmp_name'], $destPath)) {
     http_response_code(500);
     echo json_encode(['ok' => false, 'error' => 'Failed to move file']);
@@ -54,7 +82,7 @@ if (!move_uploaded_file($file['tmp_name'], $destPath)) {
 }
 
 // Public URL (relative path)
-$publicUrl = 'uploads/' . $basename;
+$publicUrl = 'assets/img/content/profiles/' . $basename;
 
 // Save to site_settings.profile_image
 try {
@@ -65,7 +93,10 @@ try {
     // Ignore DB error; still return file path
 }
 
-echo json_encode(['ok' => true, 'url' => $publicUrl]);
+// Return success with the new URL
+echo json_encode([
+    'ok' => true, 
+    'url' => $publicUrl,
+    'message' => 'Profile image uploaded successfully'
+]);
 ?>
-
-

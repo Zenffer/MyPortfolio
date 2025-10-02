@@ -185,7 +185,7 @@ function insertDefaultSettings($config) {
         'site_name' => 'My Portfolio',
         'owner_name' => 'Jeroboam T. Oliveros',
         'owner_title' => 'Developer, Photographer & Cosplayer',
-        'profile_image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop',
+        'profile_image' => 'assets/img/content/profiles/profil1.jpg',
         'bio' => 'I craft clean, performant web experiences and tell stories through images and character work. With a background that blends software development, photography, and cosplay, I enjoy projects that balance technical depth with creative polish.',
         'bio_secondary' => 'When I\'m not shipping features, I\'m experimenting with lighting setups, sewing details, or planning the next shoot.',
         'email' => 'hello@example.com',
