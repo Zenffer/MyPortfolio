@@ -1,3 +1,19 @@
+<?php
+require_once 'db.php';
+$pdo = getDatabaseConnection($db_config);
+
+// Fetch contact info from site_settings
+function getSetting($pdo, $key, $default = '') {
+    $stmt = $pdo->prepare("SELECT setting_value FROM site_settings WHERE setting_key = ?");
+    $stmt->execute([$key]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $row ? $row['setting_value'] : $default;
+}
+
+$email = getSetting($pdo, 'contact_email', 'hello@example.com');
+$linkedin = getSetting($pdo, 'contact_linkedin', 'https://www.linkedin.com');
+$instagram = getSetting($pdo, 'contact_instagram', 'https://www.instagram.com');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,8 +39,8 @@
                 <a href="kind-words.php">KIND WORDS</a>
                 <a href="about.php">ABOUT</a>
                 <a href="contact.php" class="active">CONTACT</a>
-                <a href="https://www.linkedin.com" target="_blank" rel="noopener" class="icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
-                <a href="https://www.instagram.com" target="_blank" rel="noopener" class="icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="<?php echo htmlspecialchars($linkedin); ?>" target="_blank" rel="noopener" class="icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="<?php echo htmlspecialchars($instagram); ?>" target="_blank" rel="noopener" class="icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
             </div>
         </nav>
 
@@ -34,9 +50,9 @@
                     <h1>Contact</h1>
                     <p>Have a project in mind, need photos, or want to collaborate? Send a message and I’ll get back to you.</p>
                     <div class="contact-meta">
-                        <p><i class="fa-solid fa-envelope"></i> <a href="mailto:hello@example.com">hello@example.com</a></p>
-                        <p><i class="fa-brands fa-linkedin"></i> <a href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a></p>
-                        <p><i class="fa-brands fa-instagram"></i> <a href="https://www.instagram.com" target="_blank" rel="noopener">Instagram</a></p>
+                        <p><i class="fa-solid fa-envelope"></i> <a href="mailto:<?php echo htmlspecialchars($email); ?>"><?php echo htmlspecialchars($email); ?></a></p>
+                        <p><i class="fa-brands fa-linkedin"></i> <a href="<?php echo htmlspecialchars($linkedin); ?>" target="_blank" rel="noopener">LinkedIn</a></p>
+                        <p><i class="fa-brands fa-instagram"></i> <a href="<?php echo htmlspecialchars($instagram); ?>" target="_blank" rel="noopener">Instagram</a></p>
                     </div>
                 </div>
 

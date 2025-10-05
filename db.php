@@ -153,7 +153,21 @@ function createTables($config) {
             KEY `email_idx` (`email`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ";
-    
+
+    // Insert dummy contact data after creating site_settings table
+    $dummy_contact = [
+        'contact_email' => 'jeoliveros@my.cspc.edu.ph',
+        'contact_phone' => '+ 63 912 345 6789',
+        'contact_location' => 'Region V, Philippines',
+        'contact_website' => 'https://myportfolio.com',
+        'contact_linkedin' => 'https://www.linkedin.com/in/dummyprofile',
+        'contact_instagram' => 'https://www.instagram.com/dummyprofile',
+        'contact_twitter' => 'https://twitter.com/dummyprofile',
+        'contact_github' => 'https://github.com/dummyprofile',
+        'contact_behance' => 'https://www.behance.net/dummyprofile',
+        'contact_dribbble' => 'https://dribbble.com/dummyprofile'
+    ];
+
     try {
         $pdo->exec($admin_users_sql);
         $pdo->exec($site_settings_sql);
@@ -161,6 +175,13 @@ function createTables($config) {
         $pdo->exec($gallery_images_sql);
         $pdo->exec($testimonials_sql);
         $pdo->exec($contact_messages_sql);
+
+        // Insert dummy contact data
+        foreach ($dummy_contact as $k => $v) {
+            $stmt = $pdo->prepare("INSERT IGNORE INTO site_settings (setting_key, setting_value) VALUES (?, ?)");
+            $stmt->execute([$k, $v]);
+        }
+
         return true;
     } catch (PDOException $e) {
         error_log("Failed to create tables: " . $e->getMessage());
@@ -408,4 +429,5 @@ if (basename($_SERVER['PHP_SELF']) === 'db.php') {
         echo "Database initialization failed: " . $e->getMessage();
     }
 }
+
 ?>

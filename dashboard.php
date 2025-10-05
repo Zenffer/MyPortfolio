@@ -345,9 +345,9 @@ $pdo = getDatabaseConnection($db_config);
                                         <label>Hero Subtitle</label>
                                         <input type="text" value="Developer, Photographer & Cosplayer.">
                                     </div>
-            </div>
-        </div>
-        
+                                </div>
+                            </div>
+                            
                             <!-- Cosplay Gallery -->
                             <div class="form-section">
                                 <h3>Cosplay Gallery</h3>
@@ -381,15 +381,15 @@ $pdo = getDatabaseConnection($db_config);
                                         </div>
                                     </div>
                                 </div>
-            </div>
-            
+                            </div>
+                            
                             <!-- Action Buttons -->
                             <div class="action-buttons">
                                 <button class="btn btn-secondary">Preview</button>
                                 <button class="btn btn-primary">Save Changes</button>
                             </div>
-            </div>
-            
+                        </div>
+                        
                         <!-- Kind Words Management -->
                         <div id="kindwordsContent" class="content-section" style="display: none;">
                             <div class="section-header">
@@ -536,69 +536,69 @@ $pdo = getDatabaseConnection($db_config);
             
                             <!-- Contact Details -->
                             <div class="form-section">
-                                <h3>Contact Details</h3>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Email Address</label>
-                                        <input type="email" value="hello@example.com">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Phone Number</label>
-                                        <input type="tel" value="+1 (555) 123-4567">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Location</label>
-                                        <input type="text" value="Your City, Country">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Website</label>
-                                        <input type="url" value="https://yourwebsite.com">
-                                    </div>
-                                </div>
-            </div>
-            
-                            <!-- Social Media -->
-                            <div class="form-section">
-                                <h3>Social Media Links</h3>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label>LinkedIn</label>
-                                        <input type="url" value="https://www.linkedin.com/in/yourprofile">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Instagram</label>
-                                        <input type="url" value="https://www.instagram.com/yourprofile">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Twitter/X</label>
-                                        <input type="url" value="https://twitter.com/yourprofile">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>GitHub</label>
-                                        <input type="url" value="https://github.com/yourprofile">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Behance</label>
-                                        <input type="url" value="https://www.behance.net/yourprofile">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Dribbble</label>
-                                        <input type="url" value="https://dribbble.com/yourprofile">
-                                    </div>
-                                </div>
-            </div>
-            
-                            <!-- Action Buttons -->
-                            <div class="action-buttons">
-                                <button class="btn btn-secondary">Preview</button>
-                                <button class="btn btn-primary">Save Changes</button>
-                            </div>
+    <h3>Contact Details</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="contact-email" name="contact_email" value="hello@example.com">
+        </div>
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="contact-phone" name="contact_phone" value="+1 (555) 123-4567">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="contact-location" name="contact_location" value="Your City, Country">
+        </div>
+        <div class="form-group">
+            <label>Website</label>
+            <input type="url" id="contact-website" name="contact_website" value="https://yourwebsite.com">
+        </div>
+    </div>
+</div>
+
+<!-- Social Media -->
+<div class="form-section">
+    <h3>Social Media Links</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label>LinkedIn</label>
+            <input type="url" id="contact-linkedin" name="contact_linkedin" value="https://www.linkedin.com/in/yourprofile">
+        </div>
+        <div class="form-group">
+            <label>Instagram</label>
+            <input type="url" id="contact-instagram" name="contact_instagram" value="https://www.instagram.com/yourprofile">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label>Twitter/X</label>
+            <input type="url" id="contact-twitter" name="contact_twitter" value="https://twitter.com/yourprofile">
+        </div>
+        <div class="form-group">
+            <label>GitHub</label>
+            <input type="url" id="contact-github" name="contact_github" value="https://github.com/yourprofile">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label>Behance</label>
+            <input type="url" id="contact-behance" name="contact_behance" value="https://www.behance.net/yourprofile">
+        </div>
+        <div class="form-group">
+            <label>Dribbble</label>
+            <input type="url" id="contact-dribbble" name="contact_dribbble" value="https://dribbble.com/yourprofile">
+        </div>
+    </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="action-buttons">
+    <button class="btn btn-secondary">Preview</button>
+    <button id="contact-save" class="btn btn-primary">Save Changes</button>
+</div>
 
                             <!-- Contact Messages -->
                             <div class="form-section">
@@ -757,6 +757,7 @@ $pdo = getDatabaseConnection($db_config);
                 case 'contact':
                     document.getElementById('contactHeader').style.display = 'block';
                     document.getElementById('contactLayout').style.display = 'block';
+                    loadContactSettings(); // <-- Add this line
                     break;
             }
 
@@ -1092,231 +1093,95 @@ $pdo = getDatabaseConnection($db_config);
             .replace(/'/g,'&#039;');
         }
 
-        // ===== Contact messages loader =====
-        function loadContactMessages(page){
-            const container = document.getElementById('contactMessagesContainer');
-            const pageInfo = document.getElementById('cmPageInfo');
-            if (!container) return;
-            const pageSize = 12;
-            window.__cmPage = page;
-            container.innerHTML = '<div style="grid-column: 1 / -1; background:#08090D; border:1px solid #A1A69C; border-radius:8px; padding:16px;">\n  <p style="color:#A1A69C; font-size:14px;">Loading messages…</p>\n</div>';
-            fetch('api/admin/contact_messages.php?page=' + page + '&pageSize=' + pageSize, { credentials: 'same-origin' })
-              .then(r=>r.json()).then(json=>{
-                container.innerHTML = '';
-                if (!json || !json.ok || !Array.isArray(json.data) || json.data.length === 0) {
-                    container.innerHTML = '<div style="grid-column: 1 / -1; background:#08090D; border:1px solid #A1A69C; border-radius:8px; padding:16px;"><p style="color:#A1A69C; font-size:14px;">No messages.</p></div>';
-                } else {
-                    json.data.forEach(function(m){
-                        const card = document.createElement('div');
-                        card.style.background = '#08090D';
-                        card.style.border = '1px solid #A1A69C';
-                        card.style.borderRadius = '8px';
-                        card.style.padding = '16px';
-                        card.innerHTML = `
-                            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom:8px;">
-                                <strong style="color:#fff;">${escapeHtml(m.name)} <span style=\"color:#A1A69C; font-weight:400;\">&lt;${escapeHtml(m.email)}&gt;</span></strong>
-                                <button class=\"btn btn-secondary cm-delete\" data-id=\"${m.id}\" style=\"padding:4px 8px; font-size:12px;\">Delete</button>
-                            </div>
-                            <div style=\"color:#A1A69C; font-size:12px; margin-bottom:8px;\">${escapeHtml(m.subject || '')} • ${escapeHtml(m.created_at)}</div>
-                            <div style=\"color:#fff; font-size:14px; white-space: pre-wrap;\">${escapeHtml(m.message)}</div>
-                        `;
-                        container.appendChild(card);
-                    });
-                }
-                if (pageInfo) {
-                    const total = json && typeof json.total === 'number' ? json.total : 0;
-                    const maxPage = Math.max(1, Math.ceil(total / pageSize));
-                    pageInfo.textContent = 'Page ' + page + ' of ' + maxPage;
-                    window.__cmMaxPage = maxPage;
-                }
-              }).catch(()=>{
-                container.innerHTML = '<div style="grid-column: 1 / -1; background:#08090D; border:1px solid #A1A69C; border-radius:8px; padding:16px;"><p style="color:#A1A69C; font-size:14px;">Failed to load messages.</p></div>';
-              });
-        }
+        // ===== Contact Management: Load and Save =====
+        function loadContactSettings() {
+    fetch('api/admin/settings.php?keys=contact_email,contact_phone,contact_location,contact_website,contact_linkedin,contact_instagram,contact_twitter,contact_github,contact_behance,contact_dribbble', { credentials: 'same-origin' })
+      .then(r=>r.json()).then(resp=>{
+        if (!resp || !resp.ok) return;
+        const d = resp.data || {};
+        document.getElementById('contact-email').value = d.contact_email || '';
+        document.getElementById('contact-phone').value = d.contact_phone || '';
+        document.getElementById('contact-location').value = d.contact_location || '';
+        document.getElementById('contact-website').value = d.contact_website || '';
+        document.getElementById('contact-linkedin').value = d.contact_linkedin || '';
+        document.getElementById('contact-instagram').value = d.contact_instagram || '';
+        document.getElementById('contact-twitter').value = d.contact_twitter || '';
+        document.getElementById('contact-github').value = d.contact_github || '';
+        document.getElementById('contact-behance').value = d.contact_behance || '';
+        document.getElementById('contact-dribbble').value = d.contact_dribbble || '';
+      });
+}
 
-        function changeContactMessagesPage(delta){
-            const page = Math.max(1, Math.min((window.__cmPage || 1) + delta, window.__cmMaxPage || 1));
-            loadContactMessages(page);
-        }
+$('#contactLayout').on('click', '#contact-save', function(e){
+    e.preventDefault();
+    const updates = {
+        contact_email: document.getElementById('contact-email').value.trim(),
+        contact_phone: document.getElementById('contact-phone').value.trim(),
+        contact_location: document.getElementById('contact-location').value.trim(),
+        contact_website: document.getElementById('contact-website').value.trim(),
+        contact_linkedin: document.getElementById('contact-linkedin').value.trim(),
+        contact_instagram: document.getElementById('contact-instagram').value.trim(),
+        contact_twitter: document.getElementById('contact-twitter').value.trim(),
+        contact_github: document.getElementById('contact-github').value.trim(),
+        contact_behance: document.getElementById('contact-behance').value.trim(),
+        contact_dribbble: document.getElementById('contact-dribbble').value.trim()
+    };
+    fetch('api/admin/settings.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ updates })
+    }).then(r=>r.json()).then(resp=>{
+        alert(resp && resp.ok ? 'Saved!' : 'Failed to save');
+    }).catch(()=>alert('Failed to save'));
+});
 
-        // Load available profile images
-        function loadAvailableImages(){
-            fetch('api/admin/list_profile_images.php', { credentials: 'same-origin' })
-              .then(r=>r.json()).then(resp=>{
-                  if (resp && resp.ok) {
-                      const imagesList = document.getElementById('imagesList');
-                      if (imagesList) {
-                          imagesList.innerHTML = '';
-                          resp.images.forEach(img => {
-                              const imgDiv = document.createElement('div');
-                              imgDiv.className = 'image-item';
-                              imgDiv.style.cssText = 'position: relative; cursor: pointer; border: 2px solid transparent; border-radius: 8px; overflow: hidden;';
-                              
-                              // Add close icon for uploaded images (not default)
-                              const closeIcon = !img.is_default ? `
-                                  <div class="close-icon" style="position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; background: rgba(255,0,0,0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10;" onclick="event.stopPropagation(); removeImage('${img.filename}')">
-                                      <img src="assets/js/icons/closeIcon.svg" style="width: 12px; height: 12px; filter: invert(1);" alt="Remove">
-                                  </div>
-                              ` : '';
-                              
-                              imgDiv.innerHTML = `
-                                  <img src="${img.url}" alt="${img.filename}" style="width: 100%; height: 80px; object-fit: cover;">
-                                  <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; padding: 4px; font-size: 10px; text-align: center;">
-                                      ${img.is_default ? 'Default' : 'Uploaded'}
-                                  </div>
-                                  ${closeIcon}
-                              `;
-                              imgDiv.onclick = () => selectImage(img.url);
-                              imagesList.appendChild(imgDiv);
-                          });
-                      }
-                  }
-              }).catch(()=>console.log('Failed to load images'));
-        }
+            // Load contact settings when Contact Management is shown
+            function showMainSection(sectionType) {
+    // Hide all headers
+    document.getElementById('contentHeader').style.display = 'none';
+    document.getElementById('profileHeader').style.display = 'none';
+    document.getElementById('contactHeader').style.display = 'none';
 
-        // Select an existing image
-        function selectImage(imageUrl){
-            const img = document.querySelector('#profileLayout .current-picture img');
-            if (img) img.src = imageUrl;
-            saveSettings({ profile_image: imageUrl }).then(ok => {
-                if (ok) {
-                    alert('Profile image updated successfully!');
-                    document.getElementById('availableImages').style.display = 'none';
-                } else {
-                    alert('Failed to update profile image');
-                }
-            });
-        }
+    // Hide all layouts
+    document.getElementById('contentLayout').style.display = 'none';
+    document.getElementById('profileLayout').style.display = 'none';
+    document.getElementById('contactLayout').style.display = 'none';
 
-        // Remove an uploaded image
-        function removeImage(filename){
-            if (!confirm('Are you sure you want to delete this image? This action cannot be undone.')) {
-                return;
-            }
-            
-            console.log('Removing image:', filename);
-            
-            fetch('api/admin/remove_profile_image.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'same-origin',
-                body: JSON.stringify({ filename: filename })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.ok) {
-                    console.log('Image removed successfully');
-                    alert('Image deleted successfully!');
-                    // Refresh the available images
-                    loadAvailableImages();
-                } else {
-                    console.error('Failed to remove image:', data.error);
-                    alert('Failed to delete image: ' + (data.error || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error removing image:', error);
-                alert('Failed to delete image: ' + error.message);
-            });
-        }
+    // Remove active class from all nav items
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+        item.classList.remove('active');
+    });
 
-        // Main upload function with comprehensive testing
-        function testUploadFunction(){
-            console.log('=== PROFILE IMAGE UPLOAD ===');
-            
-            // Test 1: Check authentication
-            fetch('api/admin/settings.php?keys=profile_image', { credentials: 'same-origin' })
-              .then(r => r.json())
-              .then(resp => {
-                  console.log('Auth test result:', resp);
-                  if (resp && resp.ok) {
-                      console.log('✅ Authentication: OK');
-                      testUploadAPI();
-                  } else {
-                      console.log('❌ Authentication: FAILED');
-                      alert('Authentication failed. Please login first.');
-                  }
-              })
-              .catch(error => {
-                  console.log('❌ Auth test error:', error);
-                  alert('Authentication test failed: ' + error.message);
-              });
-        }
+    // Show selected section
+    switch(sectionType) {
+        case 'content':
+            document.getElementById('contentHeader').style.display = 'block';
+            document.getElementById('contentLayout').style.display = 'block';
+            break;
+        case 'profile':
+            document.getElementById('profileHeader').style.display = 'block';
+            document.getElementById('profileLayout').style.display = 'block';
+            break;
+        case 'contact':
+            document.getElementById('contactHeader').style.display = 'block';
+            document.getElementById('contactLayout').style.display = 'block';
+            loadContactSettings(); // <-- Add this line
+            break;
+    }
 
-        function testUploadAPI(){
-            console.log('Processing file upload...');
-            
-            // Create a test file input
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-            fileInput.style.display = 'none';
-            document.body.appendChild(fileInput);
-            
-            fileInput.onchange = function(){
-                const file = this.files[0];
-                if (!file) {
-                    console.log('No file selected');
-                    return;
-                }
-                
-                console.log('Testing upload with file:', file.name, 'Size:', file.size);
-                
-                const formData = new FormData();
-                formData.append('file', file);
-                
-                fetch('api/admin/upload_profile_image.php', {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    body: formData
-                })
-                .then(response => {
-                    console.log('Upload response status:', response.status);
-                    return response.text();
-                })
-                .then(text => {
-                    console.log('Raw response:', text);
-                    try {
-                        const data = JSON.parse(text);
-                        console.log('Parsed response:', data);
-                        if (data.ok) {
-                            console.log('✅ Upload test: SUCCESS');
-                            
-                            // Update the profile image display
-                            const img = document.querySelector('#profileLayout .current-picture img');
-                            if (img) {
-                                img.src = data.url;
-                                console.log('Profile image updated to:', data.url);
-                            }
-                            
-                            // Save to database
-                            saveSettings({ profile_image: data.url });
-                            
-                            // Refresh available images
-                            loadAvailableImages();
-                            
-                            alert('Image uploaded successfully!');
-                        } else {
-                            console.log('❌ Upload test: FAILED -', data.error);
-                            alert('Upload failed: ' + data.error);
-                        }
-                    } catch (e) {
-                        console.log('❌ Response parsing error:', e);
-                        console.log('Raw response was:', text);
-                        alert('Upload test failed - invalid response');
-                    }
-                })
-                .catch(error => {
-                    console.log('❌ Upload test error:', error);
-                    alert('Upload test failed: ' + error.message);
-                })
-                .finally(() => {
-                    document.body.removeChild(fileInput);
-                });
-            };
-            
-            fileInput.click();
-        }
-    </script>
+    // Add active class to clicked nav item
+    event.target.closest('.nav-item').classList.add('active');
+
+    // If content section is shown, also ensure testimonials are loaded
+    if (sectionType === 'content') {
+        loadDashboardTestimonials();
+    }
+    if (sectionType === 'contact') {
+        loadContactMessages(1);
+    }
+}
+        </script>
 </body>
 </html>

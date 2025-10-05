@@ -90,11 +90,50 @@ try {
     $stmt = $pdo->prepare("INSERT INTO contact_messages (name, email, subject, message, ip_address, user_agent) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->execute([$name, $email, $subject, $message, $ip, $ua]);
 
-    return ['ok' => true, 'message' => 'Thanks! Your message has been sent.'];
+    // Always return JSON (no redirect)
+    echo json_encode(['ok' => true, 'message' => 'Thanks! Your message has been sent.']);
+    exit;
 } catch (Throwable $e) {
     http_response_code(500);
     echo json_encode(['ok' => false, 'error' => 'Failed to send message.']);
 }
 ?>
+
+<!-- Add this modal somewhere in your HTML -->
+<div id="contactPopup" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:#fff;padding:24px 32px;border-radius:8px;max-width:90vw;">
+    <span id="contactPopupMsg" style="color:#222;"></span>
+    <br>
+    <button onclick="document.getElementById('contactPopup').style.display='none';" style="margin-top:16px;">Close</button>
+  </div>
+</div>
+
+<script>
+// Example for AJAX form submission
+document.getElementById('yourContactFormId').addEventListener('submit', function(e){
+    e.preventDefault();
+    fetch('api/contact.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            name: this.name.value,
+            email: this.email.value,
+            subject: this.subject.value,
+            message: this.message.value,
+            website: this.website.value // honeypot
+        })
+    })
+    .then(res => res.json())
+    .then data => {
+        document.getElementById('contactPopupMsg').textContent = data.message || data.error;
+        document.getElementById('contactPopup').style.display = 'flex';
+        if(data.ok) this.reset();
+    })
+    .catch(() => {
+        document.getElementById('contactPopupMsg').textContent = 'Something went wrong. Please try again.';
+        document.getElementById('contactPopup').style.display = 'flex';
+    });
+});
+</script>
 
 
