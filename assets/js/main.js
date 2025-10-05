@@ -238,6 +238,44 @@
     setupScrollReveal();
     setupCursor();
     setupParticles();
+    // Contact form handling
+    (function setupContactForm(){
+      var form = document.getElementById('contact-form');
+      if (!form) return;
+      var statusEl = form.querySelector('.form-status');
+      function setStatus(msg, type){
+        if (!statusEl) return;
+        statusEl.textContent = msg || '';
+        statusEl.style.color = type === 'error' ? '#b00020' : '#0a7e07';
+      }
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        setStatus('Sending...', 'info');
+        var payload = {
+          name: form.name.value.trim(),
+          email: form.email.value.trim(),
+          subject: form.subject.value.trim(),
+          message: form.message.value.trim(),
+          website: form.website ? form.website.value.trim() : ''
+        };
+        fetch(form.getAttribute('action') || 'api/contact.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).then(function(res){
+          return res.json().catch(function(){ return { ok:false, error:'Unexpected response' }; });
+        }).then(function(json){
+          if (json && json.ok) {
+            setStatus(json.message || 'Thanks! Your message has been sent.', 'success');
+            form.reset();
+          } else {
+            setStatus((json && json.error) || 'Failed to send. Please try again.', 'error');
+          }
+        }).catch(function(){
+          setStatus('Network error. Please try again.', 'error');
+        });
+      });
+    })();
     // Click-to-scroll from hero indicator to main content
     var indicator = document.querySelector('.scroll-indicator');
     var mainEl = document.querySelector('main');

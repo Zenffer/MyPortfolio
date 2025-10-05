@@ -137,12 +137,30 @@ function createTables($config) {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ";
     
+    // Contact messages table
+    $contact_messages_sql = "
+        CREATE TABLE IF NOT EXISTS `contact_messages` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `name` varchar(120) NOT NULL,
+            `email` varchar(200) NOT NULL,
+            `subject` varchar(200) DEFAULT NULL,
+            `message` text NOT NULL,
+            `ip_address` varchar(64) DEFAULT NULL,
+            `user_agent` varchar(255) DEFAULT NULL,
+            `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            KEY `created_at` (`created_at`),
+            KEY `email_idx` (`email`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ";
+    
     try {
         $pdo->exec($admin_users_sql);
         $pdo->exec($site_settings_sql);
         $pdo->exec($page_content_sql);
         $pdo->exec($gallery_images_sql);
         $pdo->exec($testimonials_sql);
+        $pdo->exec($contact_messages_sql);
         return true;
     } catch (PDOException $e) {
         error_log("Failed to create tables: " . $e->getMessage());

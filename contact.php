@@ -40,7 +40,11 @@
                     </div>
                 </div>
 
-                <form class="contact-form" method="post" action="#" onsubmit="alert('Thanks! This demo form isn\'t wired yet.'); return false;">
+                <form class="contact-form" id="contact-form" method="post" action="api/contact.php" novalidate>
+                    <div class="form-field" style="position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden;">
+                        <label for="website">Website</label>
+                        <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+                    </div>
                     <div class="form-row">
                         <div class="form-field">
                             <label for="name">Name</label>
@@ -58,6 +62,9 @@
                     <div class="form-field">
                         <label for="message">Message</label>
                         <textarea id="message" name="message" rows="6" placeholder="Tell me a little about your project..." required></textarea>
+                    </div>
+                    <div class="form-field">
+                        <div class="form-status" aria-live="polite"></div>
                     </div>
                     <button class="btn" type="submit">Send message</button>
                 </form>

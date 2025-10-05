@@ -599,6 +599,17 @@ $pdo = getDatabaseConnection($db_config);
                                 <button class="btn btn-secondary">Preview</button>
                                 <button class="btn btn-primary">Save Changes</button>
                             </div>
+
+                            <!-- Contact Messages -->
+                            <div class="form-section">
+                                <h3>Contact Messages</h3>
+                                <div id="contactMessagesContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;"></div>
+                                <div id="contactMessagesPagination" style="margin-top: 12px; display: flex; gap: 8px; align-items: center;">
+                                    <button id="cmPrev" class="btn btn-secondary">Prev</button>
+                                    <span id="cmPageInfo" style="color:#A1A69C; font-size: 14px;">Page 1</span>
+                                    <button id="cmNext" class="btn btn-secondary">Next</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -756,6 +767,9 @@ $pdo = getDatabaseConnection($db_config);
             if (sectionType === 'content') {
                 loadDashboardTestimonials();
             }
+            if (sectionType === 'contact') {
+                loadContactMessages(1);
+            }
         }
 
         // Content switching functionality
@@ -871,6 +885,28 @@ $pdo = getDatabaseConnection($db_config);
 
             // ================= PROFILE MANAGEMENT =================
             loadProfileSettings();
+
+            // Contact messages controls
+            $('#contactLayout').on('click', '#cmPrev', function(e){ e.preventDefault(); changeContactMessagesPage(-1); });
+            $('#contactLayout').on('click', '#cmNext', function(e){ e.preventDefault(); changeContactMessagesPage(1); });
+            $('#contactLayout').on('click', '.cm-delete', function(e){
+                e.preventDefault();
+                const id = Number(this.getAttribute('data-id'));
+                if (!id) return;
+                if (!confirm('Delete this message?')) return;
+                fetch('api/admin/contact_messages.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ action: 'delete', id })
+                }).then(r=>r.json()).then(resp=>{
+                    if (resp && resp.ok) {
+                        loadContactMessages(window.__cmPage || 1);
+                    } else {
+                        alert('Failed to delete message');
+                    }
+                }).catch(()=>alert('Failed to delete message'));
+            });
 
             // Upload new image (using test function)
             $('#profileLayout').on('click', '#profileUploadBtn', function(e){
@@ -1043,6 +1079,64 @@ $pdo = getDatabaseConnection($db_config);
                 credentials: 'same-origin',
                 body: JSON.stringify({ updates })
             }).then(r=>r.json()).then(resp=>!!(resp && resp.ok)).catch(()=>false);
+        }
+
+        // Escape helper used in multiple renderers
+        function escapeHtml(str){
+          if (str == null) return '';
+          return String(str)
+            .replace(/&/g,'&amp;')
+            .replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;')
+            .replace(/'/g,'&#039;');
+        }
+
+        // ===== Contact messages loader =====
+        function loadContactMessages(page){
+            const container = document.getElementById('contactMessagesContainer');
+            const pageInfo = document.getElementById('cmPageInfo');
+            if (!container) return;
+            const pageSize = 12;
+            window.__cmPage = page;
+            container.innerHTML = '<div style="grid-column: 1 / -1; background:#08090D; border:1px solid #A1A69C; border-radius:8px; padding:16px;">\n  <p style="color:#A1A69C; font-size:14px;">Loading messages…</p>\n</div>';
+            fetch('api/admin/contact_messages.php?page=' + page + '&pageSize=' + pageSize, { credentials: 'same-origin' })
+              .then(r=>r.json()).then(json=>{
+                container.innerHTML = '';
+                if (!json || !json.ok || !Array.isArray(json.data) || json.data.length === 0) {
+                    container.innerHTML = '<div style="grid-column: 1 / -1; background:#08090D; border:1px solid #A1A69C; border-radius:8px; padding:16px;"><p style="color:#A1A69C; font-size:14px;">No messages.</p></div>';
+                } else {
+                    json.data.forEach(function(m){
+                        const card = document.createElement('div');
+                        card.style.background = '#08090D';
+                        card.style.border = '1px solid #A1A69C';
+                        card.style.borderRadius = '8px';
+                        card.style.padding = '16px';
+                        card.innerHTML = `
+                            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom:8px;">
+                                <strong style="color:#fff;">${escapeHtml(m.name)} <span style=\"color:#A1A69C; font-weight:400;\">&lt;${escapeHtml(m.email)}&gt;</span></strong>
+                                <button class=\"btn btn-secondary cm-delete\" data-id=\"${m.id}\" style=\"padding:4px 8px; font-size:12px;\">Delete</button>
+                            </div>
+                            <div style=\"color:#A1A69C; font-size:12px; margin-bottom:8px;\">${escapeHtml(m.subject || '')} • ${escapeHtml(m.created_at)}</div>
+                            <div style=\"color:#fff; font-size:14px; white-space: pre-wrap;\">${escapeHtml(m.message)}</div>
+                        `;
+                        container.appendChild(card);
+                    });
+                }
+                if (pageInfo) {
+                    const total = json && typeof json.total === 'number' ? json.total : 0;
+                    const maxPage = Math.max(1, Math.ceil(total / pageSize));
+                    pageInfo.textContent = 'Page ' + page + ' of ' + maxPage;
+                    window.__cmMaxPage = maxPage;
+                }
+              }).catch(()=>{
+                container.innerHTML = '<div style="grid-column: 1 / -1; background:#08090D; border:1px solid #A1A69C; border-radius:8px; padding:16px;"><p style="color:#A1A69C; font-size:14px;">Failed to load messages.</p></div>';
+              });
+        }
+
+        function changeContactMessagesPage(delta){
+            const page = Math.max(1, Math.min((window.__cmPage || 1) + delta, window.__cmMaxPage || 1));
+            loadContactMessages(page);
         }
 
         // Load available profile images
