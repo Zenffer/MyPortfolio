@@ -56,21 +56,45 @@
             <div class="photo-grid">
                 <figure class="photo-card">
                     <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1400&auto=format&fit=crop" alt="Mountain landscape at sunrise">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
                 </figure>
                 <figure class="photo-card">
                     <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1400&auto=format&fit=crop" alt="Forest pathway with mist">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
                 </figure>
                 <figure class="photo-card">
                     <img src="https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?q=80&w=1400&auto=format&fit=crop" alt="City skyline at dusk">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
                 </figure>
                 <figure class="photo-card">
                     <img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1400&auto=format&fit=crop" alt="Desert dunes with shadows">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
                 </figure>
                 <figure class="photo-card">
                     <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1400&auto=format&fit=crop" alt="Ocean waves">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
                 </figure>
                 <figure class="photo-card">
                     <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=1400&auto=format&fit=crop" alt="Portrait in natural light">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
                 </figure>
             </div>
         </section>

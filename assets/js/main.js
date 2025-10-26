@@ -6,7 +6,13 @@
     var intro = document.querySelector('.intro');
     var mainEl = document.querySelector('main');
     var indicator = document.querySelector('.scroll-indicator');
-    if (!mainEl || !intro) return;
+    if (!mainEl) return;
+    
+    // If no intro section, make main visible immediately
+    if (!intro) {
+      mainEl.classList.add('visible');
+      return;
+    }
 
     function onScroll() {
       var introRect = intro.getBoundingClientRect();
@@ -171,23 +177,59 @@
     var circle = document.getElementById('cursor-circle');
     if (!circle) return;
     var cx = -100, cy = -100, tx = -100, ty = -100, visible = false;
+    var cursorEnabled = true;
     window.__cursorCircleX = cx; window.__cursorCircleY = cy;
+    
     function onMove(e) {
+      if (!cursorEnabled) return;
       tx = e.clientX; ty = e.clientY;
       if (!visible) { circle.style.opacity = '1'; visible = true; }
     }
+    
     function onLeave() {
       visible = false; circle.style.opacity = '0';
       window.__cursorCircleX = -100; window.__cursorCircleY = -100;
     }
+    
     function raf() {
+      if (!cursorEnabled) {
+        requestAnimationFrame(raf);
+        return;
+      }
       cx += (tx - cx) * 0.2; cy += (ty - cy) * 0.2;
       circle.style.left = cx + 'px'; circle.style.top = cy + 'px';
       window.__cursorCircleX = cx; window.__cursorCircleY = cy;
       requestAnimationFrame(raf);
     }
+    
+    // Disable cursor when main section is visible
+    function checkMainVisibility() {
+      var mainEl = document.querySelector('main');
+      if (mainEl && mainEl.classList.contains('visible')) {
+        cursorEnabled = false;
+        circle.style.opacity = '0';
+        window.__cursorCircleX = -100; window.__cursorCircleY = -100;
+      } else {
+        cursorEnabled = true;
+      }
+    }
+    
+    // Check for touch devices and disable cursor
+    function checkTouchDevice() {
+      if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+        cursorEnabled = false;
+        circle.style.display = 'none';
+        return;
+      }
+    }
+    
     document.addEventListener('mousemove', onMove, { passive: true });
     document.addEventListener('mouseleave', onLeave);
+    window.addEventListener('scroll', checkMainVisibility, { passive: true });
+    
+    // Initial checks
+    checkTouchDevice();
+    checkMainVisibility();
     raf();
   }
 
@@ -196,6 +238,44 @@
     setupScrollReveal();
     setupCursor();
     setupParticles();
+    // Contact form handling
+    (function setupContactForm(){
+      var form = document.getElementById('contact-form');
+      if (!form) return;
+      var statusEl = form.querySelector('.form-status');
+      function setStatus(msg, type){
+        if (!statusEl) return;
+        statusEl.textContent = msg || '';
+        statusEl.style.color = type === 'error' ? '#b00020' : '#0a7e07';
+      }
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        setStatus('Sending...', 'info');
+        var payload = {
+          name: form.name.value.trim(),
+          email: form.email.value.trim(),
+          subject: form.subject.value.trim(),
+          message: form.message.value.trim(),
+          website: form.website ? form.website.value.trim() : ''
+        };
+        fetch(form.getAttribute('action') || 'api/contact.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).then(function(res){
+          return res.json().catch(function(){ return { ok:false, error:'Unexpected response' }; });
+        }).then(function(json){
+          if (json && json.ok) {
+            setStatus(json.message || 'Thanks! Your message has been sent.', 'success');
+            form.reset();
+          } else {
+            setStatus((json && json.error) || 'Failed to send. Please try again.', 'error');
+          }
+        }).catch(function(){
+          setStatus('Network error. Please try again.', 'error');
+        });
+      });
+    })();
     // Click-to-scroll from hero indicator to main content
     var indicator = document.querySelector('.scroll-indicator');
     var mainEl = document.querySelector('main');

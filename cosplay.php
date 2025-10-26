@@ -16,8 +16,8 @@
     <!-- Hero Section with Animated Background -->
     <section class="intro">
       <canvas id="intro-particles"></canvas>
-      <h1 class="name">Cosplay Showcase</h1>
-      <h2 class="title">Characters brought to life.</h2>
+      <h1 class="name">Hi, I'm Zenffer</h1>
+      <h2 class="title">Your friendly neighborhood cosplayer.</h2>
       <div class="scroll-indicator">
         <svg width="96" height="70" viewBox="0 0 60 40" fill="none">
           <polyline points="15,18 30,32 45,18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -50,21 +50,45 @@
             <div class="photo-grid">
                 <figure class="photo-card">
                     <img src="https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=1400&auto=format&fit=crop" alt="Cosplayer in detailed armor">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
                 </figure>
                 <figure class="photo-card">
                     <img src="https://images.unsplash.com/photo-1517816743773-6e0fd518b4a6?q=80&w=1400&auto=format&fit=crop" alt="Anime character cosplay">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
                 </figure>
                 <figure class="photo-card">
                     <img src="https://images.unsplash.com/photo-1531259683007-016a7b628fc3?q=80&w=1400&auto=format&fit=crop" alt="Sci-fi themed costume portrait">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
                 </figure>
                 <figure class="photo-card">
                     <img src="https://images.unsplash.com/photo-1520975922329-72b3d3b6b455?q=80&w=1400&auto=format&fit=crop" alt="Convention hallway cosplay">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
                 </figure>
                 <figure class="photo-card">
                     <img src="https://images.unsplash.com/photo-1520975278047-6ccace1b4d5b?q=80&w=1400&auto=format&fit=crop" alt="Hero character in motion">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
                 </figure>
                 <figure class="photo-card">
                     <img src="https://images.unsplash.com/photo-1542089363-5813837f825b?q=80&w=1400&auto=format&fit=crop" alt="Elegant fantasy costume">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
                 </figure>
             </div>
         </section>

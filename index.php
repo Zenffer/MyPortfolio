@@ -35,12 +35,10 @@
       </div>
     </section>
 
-    <!-- Main Content Area -->
     <main>
-        <!-- Top Navigation (fixed) -->
         <nav class="main-nav">
-              <div class="logo">JEROBOAM OLIVEROS</div>
-              <div class="nav-links">
+            <div class="logo">JEROBOAM OLIVEROS</div>
+            <div class="nav-links">
                 <a href="index.php" class="active">PROJECTS</a>
                 <a href="photography.php">PHOTOGRAPHY</a>
                 <a href="cosplay.php">COSPLAY</a>
@@ -49,24 +47,59 @@
                 <a href="contact.php">CONTACT</a>
                 <a href="https://www.linkedin.com" target="_blank" rel="noopener" class="icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
                 <a href="https://www.instagram.com" target="_blank" rel="noopener" class="icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-              </div>
-            </nav>
-        <!-- About Section -->
-        <section id="about">
-            <h1>About Me</h1>
-            <p>Welcome to my portfolio! Here you can learn more about me and my work.</p>
-        </section>
+            </div>
+        </nav>
 
-        <!-- Projects Section -->
-        <section id="projects">
-            <h2>Projects</h2>
-            <p>Check out some of my recent projects below.</p>
-        </section>
+        <section id="projects" class="photo-section">
+            <div class="photo-header">
+                <h1>Projects</h1>
+                <p>A showcase of my recent development work and creative projects.</p>
+            </div>
 
-        <!-- Contact Section -->
-        <section id="contact">
-            <h2>Contact</h2>
-            <p>Feel free to reach out to me for any inquiries or collaborations.</p>
+            <div class="photo-grid">
+                <figure class="photo-card">
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1400&auto=format&fit=crop" alt="Web development project dashboard">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
+                </figure>
+                <figure class="photo-card">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1400&auto=format&fit=crop" alt="Data visualization dashboard">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
+                </figure>
+                <figure class="photo-card">
+                    <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?q=80&w=1400&auto=format&fit=crop" alt="Mobile app interface">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
+                </figure>
+                <figure class="photo-card">
+                    <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1400&auto=format&fit=crop" alt="E-commerce website">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
+                </figure>
+                <figure class="photo-card">
+                    <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=1400&auto=format&fit=crop" alt="API integration project">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
+                </figure>
+                <figure class="photo-card">
+                    <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1400&auto=format&fit=crop" alt="Database management system">
+                    <figcaption>
+                        <h3>Content Title</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </figcaption>
+                </figure>
+            </div>
         </section>
     </main>
 
