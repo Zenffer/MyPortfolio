@@ -15,6 +15,11 @@ body {
   color: #fff; /* White text */
 }
 
+/* Ensure root elements can size children with viewport-relative values */
+html, body {
+  height: 100%;
+}
+
 /* ===== TOP NAV (PORTFOLIO STYLE) ===== */
 .main-nav {
   display: flex;
@@ -180,7 +185,7 @@ nav ul li a:hover {
 main {
   position: relative;
   z-index: 2;
-  margin-top: calc(100vh ); /* Push main below the fixed intro */
+  margin-top: calc(100vh ); /* keep if you want main pushed below the fixed .intro */
   background: #ffffff; /* all white */
   box-shadow: 0 4px 24px rgba(0,0,0,0.12);
   padding-top: 0; /* Remove space above navbar inside main */
@@ -189,6 +194,15 @@ main {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.6s ease;
+
+  /* Make main fill the viewport height (or remaining space) */
+  min-height: 100vh; /* ensures main is at least full viewport tall */
+
+  /* If you want main to fill the remaining space below a fixed header/intro,
+     use a calc() with the header height, e.g.:
+     min-height: calc(100vh - 80px);
+     Or if .intro is exactly 100vh and you keep margin-top:100vh, the main area
+     will already be below the intro; adjust as needed. */
 }
 
 main.visible {
