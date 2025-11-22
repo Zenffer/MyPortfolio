@@ -159,6 +159,42 @@ function createTables($config) {
         CREATE TABLE IF NOT EXISTS `projects` (
             `id` int(11) NOT NULL AUTO_INCREMENT,
             `title` varchar(200) NOT NULL,
+            `slug` varchar(200) DEFAULT NULL,
+            `description` text,
+            `image_path` varchar(255) NOT NULL,
+            `alt_text` varchar(200) DEFAULT NULL,
+            `display_order` int(11) DEFAULT 0,
+            `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `slug` (`slug`),
+            KEY `display_order` (`display_order`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ";
+    
+    // Project images table (for multiple images per project)
+    $project_images_sql = "
+        CREATE TABLE IF NOT EXISTS `project_images` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `project_id` int(11) NOT NULL,
+            `image_path` varchar(255) NOT NULL,
+            `alt_text` varchar(200) DEFAULT NULL,
+            `display_order` int(11) DEFAULT 0,
+            `grid_size` enum('small','medium','large') DEFAULT 'medium',
+            `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            KEY `project_id` (`project_id`),
+            KEY `display_order` (`project_id`, `display_order`),
+            FOREIGN KEY (`project_id`) REFERENCES `projects`(`id`) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ";
+    
+    // Photography table
+    $photography_sql = "
+        CREATE TABLE IF NOT EXISTS `photography` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `title` varchar(200) NOT NULL,
             `description` text,
             `image_path` varchar(255) NOT NULL,
             `alt_text` varchar(200) DEFAULT NULL,
@@ -167,6 +203,60 @@ function createTables($config) {
             `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`),
             KEY `display_order` (`display_order`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ";
+    
+    // Photography images table (for multiple images per photo)
+    $photography_images_sql = "
+        CREATE TABLE IF NOT EXISTS `photography_images` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `photography_id` int(11) NOT NULL,
+            `image_path` varchar(255) NOT NULL,
+            `alt_text` varchar(200) DEFAULT NULL,
+            `display_order` int(11) DEFAULT 0,
+            `grid_size` enum('small','medium','large') DEFAULT 'medium',
+            `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            KEY `photography_id` (`photography_id`),
+            KEY `display_order` (`photography_id`, `display_order`),
+            FOREIGN KEY (`photography_id`) REFERENCES `photography`(`id`) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ";
+    
+    // Cosplay table
+    $cosplay_sql = "
+        CREATE TABLE IF NOT EXISTS `cosplay` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `title` varchar(200) NOT NULL,
+            `slug` varchar(200) DEFAULT NULL,
+            `description` text,
+            `image_path` varchar(255) NOT NULL,
+            `alt_text` varchar(200) DEFAULT NULL,
+            `display_order` int(11) DEFAULT 0,
+            `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `slug` (`slug`),
+            KEY `display_order` (`display_order`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ";
+    
+    // Cosplay images table (for multiple images per cosplay)
+    $cosplay_images_sql = "
+        CREATE TABLE IF NOT EXISTS `cosplay_images` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `cosplay_id` int(11) NOT NULL,
+            `image_path` varchar(255) NOT NULL,
+            `alt_text` varchar(200) DEFAULT NULL,
+            `display_order` int(11) DEFAULT 0,
+            `grid_size` enum('small','medium','large') DEFAULT 'medium',
+            `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            KEY `cosplay_id` (`cosplay_id`),
+            KEY `display_order` (`cosplay_id`, `display_order`),
+            FOREIGN KEY (`cosplay_id`) REFERENCES `cosplay`(`id`) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ";
 
@@ -192,6 +282,65 @@ function createTables($config) {
         $pdo->exec($testimonials_sql);
         $pdo->exec($contact_messages_sql);
         $pdo->exec($projects_sql);
+        $pdo->exec($project_images_sql);
+        $pdo->exec($photography_sql);
+        $pdo->exec($photography_images_sql);
+        $pdo->exec($cosplay_sql);
+        $pdo->exec($cosplay_images_sql);
+
+        // Migrate existing projects table: Add slug column and unique key if they don't exist
+        try {
+            // Check if slug column exists
+            $stmt = $pdo->query("SHOW COLUMNS FROM `projects` LIKE 'slug'");
+            if ($stmt->rowCount() === 0) {
+                $pdo->exec("ALTER TABLE `projects` ADD COLUMN `slug` varchar(200) DEFAULT NULL AFTER `title`");
+            }
+        } catch (PDOException $e) {
+            // Column might already exist, ignore error
+            error_log("Slug column migration: " . $e->getMessage());
+        }
+        
+        try {
+            // Check if slug unique key exists
+            $stmt = $pdo->query("SHOW INDEX FROM `projects` WHERE Key_name = 'slug'");
+            if ($stmt->rowCount() === 0) {
+                $pdo->exec("ALTER TABLE `projects` ADD UNIQUE KEY `slug` (`slug`)");
+            }
+        } catch (PDOException $e) {
+            // Key might already exist, ignore error
+            error_log("Slug unique key migration: " . $e->getMessage());
+        }
+        
+        // Generate slugs for existing projects that don't have one
+        try {
+            $stmt = $pdo->query("SELECT id, title FROM projects WHERE slug IS NULL OR slug = ''");
+            $projectsWithoutSlug = $stmt->fetchAll();
+            
+            foreach ($projectsWithoutSlug as $project) {
+                $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $project['title'])));
+                $slug = preg_replace('/-+/', '-', $slug);
+                $slug = trim($slug, '-');
+                
+                // Ensure uniqueness
+                $baseSlug = $slug;
+                $counter = 1;
+                while (true) {
+                    $checkStmt = $pdo->prepare("SELECT id FROM projects WHERE slug = ? AND id != ?");
+                    $checkStmt->execute([$slug, $project['id']]);
+                    if (!$checkStmt->fetch()) {
+                        break;
+                    }
+                    $slug = $baseSlug . '-' . $counter;
+                    $counter++;
+                }
+                
+                $updateStmt = $pdo->prepare("UPDATE projects SET slug = ? WHERE id = ?");
+                $updateStmt->execute([$slug, $project['id']]);
+            }
+        } catch (PDOException $e) {
+            // Log but don't fail - slugs can be generated later
+            error_log("Slug generation for existing projects: " . $e->getMessage());
+        }
 
         // Insert dummy contact data
         foreach ($dummy_contact as $k => $v) {
@@ -348,6 +497,46 @@ function insertDefaultTestimonials($config) {
     }
 }
 
+// Ensure photography directory exists
+function ensurePhotographyDirectory() {
+    $uploadDir = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'photography';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+        // Create .htaccess for security
+        $htaccess = $uploadDir . DIRECTORY_SEPARATOR . '.htaccess';
+        if (!file_exists($htaccess)) {
+            file_put_contents($htaccess, "Options -Indexes\n");
+        }
+    }
+}
+
+// Ensure cosplay directory exists
+function ensureCosplayDirectory() {
+    $uploadDir = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'cosplay';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+        // Create .htaccess for security
+        $htaccess = $uploadDir . DIRECTORY_SEPARATOR . '.htaccess';
+        if (!file_exists($htaccess)) {
+            file_put_contents($htaccess, "Options -Indexes\n");
+        }
+    }
+}
+
+// Ensure project_images directory exists
+function ensureProjectImagesDirectory() {
+    $uploadDir = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'projects';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+        // Create .htaccess for security
+        $htaccess = $uploadDir . DIRECTORY_SEPARATOR . '.htaccess';
+        if (!file_exists($htaccess)) {
+            file_put_contents($htaccess, "Options -Indexes\n");
+        }
+    }
+    return $uploadDir;
+}
+
 // Main initialization function
 function initializeDatabase($config) {
     try {
@@ -358,6 +547,15 @@ function initializeDatabase($config) {
         
         // Create tables
         createTables($config);
+        
+        // Ensure project images directory exists
+        ensureProjectImagesDirectory();
+        
+        // Ensure photography directory exists
+        ensurePhotographyDirectory();
+        
+        // Ensure cosplay directory exists
+        ensureCosplayDirectory();
         
         // Create default admin
         createDefaultAdmin($config);
@@ -434,6 +632,64 @@ function updatePageContent($config, $page_name, $section, $content) {
     } catch (Exception $e) {
         error_log("Failed to update page content: " . $e->getMessage());
         return false;
+    }
+}
+
+// Utility function to get project by slug or ID
+function getProject($config, $identifier, $bySlug = true) {
+    try {
+        $pdo = getDatabaseConnection($config);
+        if ($bySlug) {
+            $stmt = $pdo->prepare("SELECT * FROM projects WHERE slug = ?");
+        } else {
+            $stmt = $pdo->prepare("SELECT * FROM projects WHERE id = ?");
+        }
+        $stmt->execute([$identifier]);
+        return $stmt->fetch();
+    } catch (Exception $e) {
+        error_log("Failed to get project: " . $e->getMessage());
+        return null;
+    }
+}
+
+// Utility function to get project images
+function getProjectImages($config, $project_id) {
+    try {
+        $pdo = getDatabaseConnection($config);
+        $stmt = $pdo->prepare("SELECT * FROM project_images WHERE project_id = ? ORDER BY display_order ASC, id ASC");
+        $stmt->execute([$project_id]);
+        return $stmt->fetchAll();
+    } catch (Exception $e) {
+        error_log("Failed to get project images: " . $e->getMessage());
+        return [];
+    }
+}
+
+// Utility function to generate a unique slug from title
+function generateProjectSlug($config, $title, $excludeId = 0) {
+    try {
+        $pdo = getDatabaseConnection($config);
+        $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title)));
+        $slug = preg_replace('/-+/', '-', $slug);
+        $slug = trim($slug, '-');
+        
+        // Ensure uniqueness
+        $baseSlug = $slug;
+        $counter = 1;
+        while (true) {
+            $stmt = $pdo->prepare("SELECT id FROM projects WHERE slug = ? AND id != ?");
+            $stmt->execute([$slug, $excludeId]);
+            if (!$stmt->fetch()) {
+                break;
+            }
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+        return $slug;
+    } catch (Exception $e) {
+        error_log("Failed to generate project slug: " . $e->getMessage());
+        // Fallback to simple slug
+        return strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title)));
     }
 }
 

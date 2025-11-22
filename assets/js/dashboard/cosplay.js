@@ -1,24 +1,24 @@
-// Modal helpers for project management
-function openProjectModal(mode, data) {
-    console.log('openProjectModal called', mode, data);
-    const modal = document.getElementById('projectModal');
+// Modal helpers for cosplay management
+function openCosplayModal(mode, data) {
+    console.log('openCosplayModal called', mode, data);
+    const modal = document.getElementById('cosplayModal');
     if (!modal) {
-        console.error('Project modal not found!');
-        alert('Project modal not found. Please refresh the page.');
+        console.error('Cosplay modal not found!');
+        alert('Cosplay modal not found. Please refresh the page.');
         return;
     }
     
-    const title = document.getElementById('pm-title');
-    const form = document.getElementById('project-form');
-    const titleInput = document.getElementById('pm-title-input');
-    const descriptionEl = document.getElementById('pm-description');
-    const imageUrlEl = document.getElementById('pm-image-url');
-    const imageFileEl = document.getElementById('pm-image-file');
-    const imagePathEl = document.getElementById('pm-image-path');
-    const altTextEl = document.getElementById('pm-alt-text');
-    const projectIdEl = document.getElementById('pm-project-id');
-    const uploadStatus = document.getElementById('pm-image-upload-status');
-    const uploadMessage = document.getElementById('pm-upload-message');
+    const title = document.getElementById('cm-title');
+    const form = document.getElementById('cosplay-form');
+    const titleInput = document.getElementById('cm-title-input');
+    const descriptionEl = document.getElementById('cm-description');
+    const imageUrlEl = document.getElementById('cm-image-url');
+    const imageFileEl = document.getElementById('cm-image-file');
+    const imagePathEl = document.getElementById('cm-image-path');
+    const altTextEl = document.getElementById('cm-alt-text');
+    const cosplayIdEl = document.getElementById('cm-cosplay-id');
+    const uploadStatus = document.getElementById('cm-image-upload-status');
+    const uploadMessage = document.getElementById('cm-upload-message');
     
     if (!form || !titleInput || !imageUrlEl) {
         console.error('Form elements not found!', {form, titleInput, imageUrlEl});
@@ -27,31 +27,31 @@ function openProjectModal(mode, data) {
     }
 
     // Reset form
-    title.textContent = mode === 'edit' ? 'Edit Project' : 'Add Project';
+    title.textContent = mode === 'edit' ? 'Edit Cosplay' : 'Add Cosplay';
     form.reset();
     uploadStatus.style.display = 'none';
     
     // Reset previews and uploaded images
-    const thumbnailPreview = document.getElementById('pm-thumbnail-preview');
-    const gridUploadStatus = document.getElementById('pm-grid-upload-status');
+    const thumbnailPreview = document.getElementById('cm-thumbnail-preview');
+    const gridUploadStatus = document.getElementById('cm-grid-upload-status');
     
     if (thumbnailPreview) thumbnailPreview.style.display = 'none';
     if (gridUploadStatus) gridUploadStatus.style.display = 'none';
     
     // Reset uploaded images array and display
-    if (!window.uploadedGalleryImages) {
-        window.uploadedGalleryImages = [];
+    if (!window.uploadedCosplayGalleryImages) {
+        window.uploadedCosplayGalleryImages = [];
     }
-    window.uploadedGalleryImages = [];
-    const uploadedImagesSectionEl = document.getElementById('pm-uploaded-images-section');
-    const gridUploadContentEl = document.getElementById('pm-grid-upload-content');
-    const gridUploadProgressEl = document.getElementById('pm-grid-upload-progress');
+    window.uploadedCosplayGalleryImages = [];
+    const uploadedImagesSectionEl = document.getElementById('cm-uploaded-images-section');
+    const gridUploadContentEl = document.getElementById('cm-grid-upload-content');
+    const gridUploadProgressEl = document.getElementById('cm-grid-upload-progress');
     if (uploadedImagesSectionEl) uploadedImagesSectionEl.style.display = 'none';
     if (gridUploadContentEl) gridUploadContentEl.style.display = 'block';
     if (gridUploadProgressEl) gridUploadProgressEl.style.display = 'none';
     
     if (data && data.id) {
-        projectIdEl.value = data.id;
+        cosplayIdEl.value = data.id;
         titleInput.value = data.title || '';
         descriptionEl.value = data.description || '';
         imageUrlEl.value = data.image_path || '';
@@ -60,15 +60,15 @@ function openProjectModal(mode, data) {
         
         // Show thumbnail preview if image exists
         if (data.image_path) {
-            const thumbnailPreview = document.getElementById('pm-thumbnail-preview');
-            const thumbnailPreviewImg = document.getElementById('pm-thumbnail-preview-img');
+            const thumbnailPreview = document.getElementById('cm-thumbnail-preview');
+            const thumbnailPreviewImg = document.getElementById('cm-thumbnail-preview-img');
             if (thumbnailPreview && thumbnailPreviewImg) {
                 thumbnailPreviewImg.src = data.image_path;
                 thumbnailPreview.style.display = 'block';
             }
         }
     } else {
-        projectIdEl.value = '';
+        cosplayIdEl.value = '';
         titleInput.value = '';
         descriptionEl.value = '';
         imageUrlEl.value = '';
@@ -110,7 +110,7 @@ function openProjectModal(mode, data) {
         const formData = new FormData();
         formData.append('file', file);
         
-        return fetch('api/admin/upload_project_image.php', {
+        return fetch('api/admin/upload_cosplay.php', {
             method: 'POST',
             credentials: 'same-origin',
             body: formData
@@ -144,8 +144,8 @@ function openProjectModal(mode, data) {
     
     // Thumbnail preview when URL is entered
     imageUrlEl.oninput = function() {
-        const previewDiv = document.getElementById('pm-thumbnail-preview');
-        const previewImg = document.getElementById('pm-thumbnail-preview-img');
+        const previewDiv = document.getElementById('cm-thumbnail-preview');
+        const previewImg = document.getElementById('cm-thumbnail-preview-img');
         if (previewDiv && previewImg && imageUrlEl.value.trim()) {
             previewImg.src = imageUrlEl.value.trim();
             previewDiv.style.display = 'block';
@@ -158,16 +158,16 @@ function openProjectModal(mode, data) {
     };
     
     // Grid images upload area setup (Google Forms style)
-    const gridUploadArea = document.getElementById('pm-grid-upload-area');
-    const gridImagesInput = document.getElementById('pm-grid-images');
-    const gridUploadContent = document.getElementById('pm-grid-upload-content');
-    const gridUploadProgress = document.getElementById('pm-grid-upload-progress');
-    const uploadedImagesSection = document.getElementById('pm-uploaded-images-section');
-    const uploadedImagesGrid = document.getElementById('pm-uploaded-images-grid');
-    const uploadedCountSpan = document.getElementById('pm-uploaded-count');
+    const gridUploadArea = document.getElementById('cm-grid-upload-area');
+    const gridImagesInput = document.getElementById('cm-grid-images');
+    const gridUploadContent = document.getElementById('cm-grid-upload-content');
+    const gridUploadProgress = document.getElementById('cm-grid-upload-progress');
+    const uploadedImagesSection = document.getElementById('cm-uploaded-images-section');
+    const uploadedImagesGrid = document.getElementById('cm-uploaded-images-grid');
+    const uploadedCountSpan = document.getElementById('cm-uploaded-count');
     
-    // Store uploaded images (will be saved when project is created/updated)
-    let uploadedGalleryImages = [];
+    // Store uploaded images (will be saved when cosplay is created/updated)
+    let uploadedCosplayGalleryImages = [];
     
     // Click to upload
     if (gridUploadArea && gridImagesInput) {
@@ -214,18 +214,18 @@ function openProjectModal(mode, data) {
     function handleGridImagesUpload(files) {
         if (!files || files.length === 0) return;
         
-        // Check if we have a project ID (for editing) or if we're creating new
-        const projectId = projectIdEl ? projectIdEl.value : null;
+        // Check if we have a cosplay ID (for editing) or if we're creating new
+        const cosplayId = cosplayIdEl ? cosplayIdEl.value : null;
         
-        if (!projectId) {
-            // For new projects, store files temporarily and upload after project is created
+        if (!cosplayId) {
+            // For new cosplay, store files temporarily and upload after cosplay is created
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    window.uploadedGalleryImages.push({
+                    window.uploadedCosplayGalleryImages.push({
                         file: file,
                         preview: e.target.result,
-                        gridSize: document.getElementById('pm-grid-size') ? document.getElementById('pm-grid-size').value : 'medium',
+                        gridSize: document.getElementById('cm-grid-size') ? document.getElementById('cm-grid-size').value : 'medium',
                         tempId: Date.now() + Math.random()
                     });
                     updateUploadedImagesDisplay();
@@ -235,15 +235,15 @@ function openProjectModal(mode, data) {
             return;
         }
         
-        // For existing projects, upload immediately
-        uploadGridImagesImmediately(files, projectId);
+        // For existing cosplay, upload immediately
+        uploadGridImagesImmediately(files, cosplayId);
     }
     
-    // Upload grid images immediately for existing projects
-    function uploadGridImagesImmediately(files, projectId) {
-        const gridSize = document.getElementById('pm-grid-size') ? document.getElementById('pm-grid-size').value : 'medium';
+    // Upload grid images immediately for existing cosplay
+    function uploadGridImagesImmediately(files, cosplayId) {
+        const gridSize = document.getElementById('cm-grid-size') ? document.getElementById('cm-grid-size').value : 'medium';
         const formData = new FormData();
-        formData.append('project_id', projectId);
+        formData.append('cosplay_id', cosplayId);
         formData.append('grid_size', gridSize);
         
         for (let i = 0; i < files.length; i++) {
@@ -254,7 +254,7 @@ function openProjectModal(mode, data) {
         if (gridUploadContentEl) gridUploadContentEl.style.display = 'none';
         if (gridUploadProgressEl) gridUploadProgressEl.style.display = 'block';
         
-        fetch('api/admin/upload_project_images.php', {
+        fetch('api/admin/upload_cosplay_images.php', {
             method: 'POST',
             credentials: 'same-origin',
             body: formData
@@ -267,7 +267,7 @@ function openProjectModal(mode, data) {
             if (json && json.ok && json.uploaded) {
                 // Add uploaded images to display
                 json.uploaded.forEach(img => {
-                    window.uploadedGalleryImages.push({
+                    window.uploadedCosplayGalleryImages.push({
                         id: img.id,
                         image_path: img.image_path,
                         grid_size: img.grid_size,
@@ -277,8 +277,8 @@ function openProjectModal(mode, data) {
                 updateUploadedImagesDisplay();
                 
                 // Show success message
-                const statusDiv = document.getElementById('pm-grid-upload-status');
-                const messageSpan = document.getElementById('pm-grid-upload-message');
+                const statusDiv = document.getElementById('cm-grid-upload-status');
+                const messageSpan = document.getElementById('cm-grid-upload-message');
                 if (statusDiv && messageSpan) {
                     statusDiv.style.display = 'block';
                     messageSpan.textContent = json.uploaded.length + ' image(s) uploaded successfully!';
@@ -307,7 +307,7 @@ function openProjectModal(mode, data) {
     function updateUploadedImagesDisplay() {
         if (!uploadedImagesGrid || !uploadedImagesSectionEl || !uploadedCountSpan) return;
         
-        const images = window.uploadedGalleryImages || [];
+        const images = window.uploadedCosplayGalleryImages || [];
         
         if (images.length === 0) {
             uploadedImagesSectionEl.style.display = 'none';
@@ -339,7 +339,7 @@ function openProjectModal(mode, data) {
                 if (confirm('Remove this image?')) {
                     if (img.id) {
                         // Delete from server
-                        fetch('api/admin/project_images.php', {
+                        fetch('api/admin/cosplay_images.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             credentials: 'same-origin',
@@ -348,7 +348,7 @@ function openProjectModal(mode, data) {
                         .then(r => r.json())
                         .then(json => {
                             if (json && json.ok) {
-                                window.uploadedGalleryImages.splice(index, 1);
+                                window.uploadedCosplayGalleryImages.splice(index, 1);
                                 updateUploadedImagesDisplay();
                             } else {
                                 alert('Failed to delete image');
@@ -356,7 +356,7 @@ function openProjectModal(mode, data) {
                         });
                     } else {
                         // Remove from temp array
-                        window.uploadedGalleryImages.splice(index, 1);
+                        window.uploadedCosplayGalleryImages.splice(index, 1);
                         updateUploadedImagesDisplay();
                     }
                 }
@@ -382,12 +382,12 @@ function openProjectModal(mode, data) {
         loadExistingGalleryImages(data.id);
     }
     
-    function loadExistingGalleryImages(projectId) {
-        fetch('api/admin/project_images.php?project_id=' + projectId, { credentials: 'same-origin' })
+    function loadExistingGalleryImages(cosplayId) {
+        fetch('api/admin/cosplay_images.php?cosplay_id=' + cosplayId, { credentials: 'same-origin' })
             .then(r => r.json())
             .then(json => {
                 if (json && json.ok && Array.isArray(json.data)) {
-                    window.uploadedGalleryImages = json.data;
+                    window.uploadedCosplayGalleryImages = json.data;
                     updateUploadedImagesDisplay();
                 }
             })
@@ -411,14 +411,14 @@ function openProjectModal(mode, data) {
         const imageUrl = imageUrlEl.value.trim();
         const imagePath = imagePathEl.value.trim();
         const altText = altTextEl.value.trim();
-        const projectId = projectIdEl.value;
+        const cosplayId = cosplayIdEl.value;
         
         const finalImagePath = imagePath || imageUrl;
         
-        console.log('Form data:', {title, description, finalImagePath, altText, projectId});
+        console.log('Form data:', {title, description, finalImagePath, altText, cosplayId});
         
         if (!title) {
-            alert('Project title is required');
+            alert('Cosplay title is required');
             return;
         }
         
@@ -428,8 +428,8 @@ function openProjectModal(mode, data) {
         }
         
         const payload = {
-            action: projectId ? 'update' : 'create',
-            id: projectId || undefined,
+            action: cosplayId ? 'update' : 'create',
+            id: cosplayId || undefined,
             title: title,
             description: description,
             image_path: finalImagePath,
@@ -437,16 +437,16 @@ function openProjectModal(mode, data) {
         };
         
         // Check for uploaded gallery images (either from server or temp)
-        const hasUploadedImages = uploadedGalleryImages && uploadedGalleryImages.length > 0;
+        const hasUploadedImages = uploadedCosplayGalleryImages && uploadedCosplayGalleryImages.length > 0;
         
         console.log('Sending payload:', payload);
         
-        const saveBtn = document.getElementById('pm-save');
+        const saveBtn = document.getElementById('cm-save');
         const originalText = saveBtn.textContent;
         saveBtn.disabled = true;
         saveBtn.textContent = 'Saving...';
         
-        fetch('api/admin/projects.php', {
+        fetch('api/admin/cosplay.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'same-origin',
@@ -460,21 +460,21 @@ function openProjectModal(mode, data) {
             console.log('Response data:', resp);
             
             if (resp && resp.ok) {
-                const savedProjectId = resp.id || projectId;
+                const savedCosplayId = resp.id || cosplayId;
                 
-                // Upload temp gallery images if any (for new projects)
-                const tempImages = (window.uploadedGalleryImages || []).filter(img => !img.id && img.file);
-                if (tempImages.length > 0 && savedProjectId) {
-                    const gridSize = document.getElementById('pm-grid-size') ? document.getElementById('pm-grid-size').value : 'medium';
+                // Upload temp gallery images if any (for new cosplay)
+                const tempImages = (window.uploadedCosplayGalleryImages || []).filter(img => !img.id && img.file);
+                if (tempImages.length > 0 && savedCosplayId) {
+                    const gridSize = document.getElementById('cm-grid-size') ? document.getElementById('cm-grid-size').value : 'medium';
                     const gridFormData = new FormData();
-                    gridFormData.append('project_id', savedProjectId);
+                    gridFormData.append('cosplay_id', savedCosplayId);
                     gridFormData.append('grid_size', gridSize);
                     
                     tempImages.forEach(img => {
                         gridFormData.append('images[]', img.file);
                     });
                     
-                    return fetch('api/admin/upload_project_images.php', {
+                    return fetch('api/admin/upload_cosplay_images.php', {
                         method: 'POST',
                         credentials: 'same-origin',
                         body: gridFormData
@@ -485,9 +485,9 @@ function openProjectModal(mode, data) {
                             // Update temp images with server IDs
                             if (gridResp.uploaded) {
                                 gridResp.uploaded.forEach((uploadedImg, idx) => {
-                                    const tempIdx = window.uploadedGalleryImages.findIndex(img => !img.id && img.file);
+                                    const tempIdx = window.uploadedCosplayGalleryImages.findIndex(img => !img.id && img.file);
                                     if (tempIdx !== -1) {
-                                        window.uploadedGalleryImages[tempIdx] = uploadedImg;
+                                        window.uploadedCosplayGalleryImages[tempIdx] = uploadedImg;
                                     }
                                 });
                             }
@@ -513,35 +513,35 @@ function openProjectModal(mode, data) {
                 modal.style.display = 'none';
                 form.reset();
                 uploadStatus.style.display = 'none';
-                window.uploadedGalleryImages = [];
-                const uploadedImagesSection = document.getElementById('pm-uploaded-images-section');
-                const gridUploadStatus = document.getElementById('pm-grid-upload-status');
+                window.uploadedCosplayGalleryImages = [];
+                const uploadedImagesSection = document.getElementById('cm-uploaded-images-section');
+                const gridUploadStatus = document.getElementById('cm-grid-upload-status');
                 if (uploadedImagesSection) uploadedImagesSection.style.display = 'none';
                 if (gridUploadStatus) {
                     setTimeout(() => {
                         gridUploadStatus.style.display = 'none';
                     }, 3000);
                 }
-                loadDashboardProjects();
+                loadDashboardCosplay();
                 
                 // If editing, also reload page content
-                if (projectId) {
-                    loadProjectsPageContent();
+                if (cosplayId) {
+                    loadCosplayPageContent();
                 }
                 
-                alert('Project saved successfully!');
+                alert('Cosplay saved successfully!');
             }
         })
         .catch((err) => {
             console.error('Error:', err);
             saveBtn.disabled = false;
             saveBtn.textContent = originalText;
-            alert('Failed to save project: ' + (err.message || 'Unknown error'));
+            alert('Failed to save cosplay: ' + (err.message || 'Unknown error'));
         });
     };
 
     // Cancel button
-    const cancelBtn = document.getElementById('pm-cancel');
+    const cancelBtn = document.getElementById('cm-cancel');
     cancelBtn.onclick = function() {
         modal.style.display = 'none';
         form.reset();
@@ -558,47 +558,54 @@ function openProjectModal(mode, data) {
     };
 }
 
-// Dashboard project management functions
-function loadDashboardProjects() {
-    console.log('loadDashboardProjects called');
-    const container = document.getElementById('dashboard-projects');
+// Helper function to escape HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Dashboard cosplay management functions
+function loadDashboardCosplay() {
+    console.log('loadDashboardCosplay called');
+    const container = document.getElementById('dashboard-cosplay');
     if (!container) {
-        console.error('dashboard-projects container not found');
+        console.error('dashboard-cosplay container not found');
         // Try again after a short delay
-        setTimeout(loadDashboardProjects, 500);
+        setTimeout(loadDashboardCosplay, 500);
         return;
     }
-    console.log('Container found, loading projects...');
+    console.log('Container found, loading cosplay...');
     
-    // Ensure projects section is visible
-    const projectsSection = document.getElementById('projectsContent');
-    if (projectsSection) {
-        projectsSection.style.display = 'block';
+    // Ensure cosplay section is visible
+    const cosplaySection = document.getElementById('cosplayContent');
+    if (cosplaySection) {
+        cosplaySection.style.display = 'block';
     }
     
-    container.innerHTML = '<div style="background: #08090D; border: 1px solid #A1A69C; border-radius: 8px; padding: 16px;"><p style="color:#A1A69C; font-size:14px;">Loading projects…</p></div>';
+    container.innerHTML = '<div style="background: #08090D; border: 1px solid #A1A69C; border-radius: 8px; padding: 16px;"><p style="color:#A1A69C; font-size:14px;">Loading cosplay…</p></div>';
 
-    fetch('api/admin/projects.php', { credentials: 'same-origin' })
+    fetch('api/admin/cosplay.php', { credentials: 'same-origin' })
       .then(r => {
-          console.log('Projects API response status:', r.status);
+          console.log('Cosplay API response status:', r.status);
           return r.json();
       })
       .then(json => {
-          console.log('Projects API response:', json);
+          console.log('Cosplay API response:', json);
           container.innerHTML = '';
           if (!json || !json.ok) {
-              const errorMsg = json && json.error ? json.error : 'Failed to load projects';
+              const errorMsg = json && json.error ? json.error : 'Failed to load cosplay';
               container.innerHTML = '<div style="background:#08090D; border:1px solid #A1A69C; border-radius:8px; padding:16px;"><p style="color:#A1A69C; font-size:14px;">Error: ' + errorMsg + '</p></div>';
               return;
           }
           if (!Array.isArray(json.data) || json.data.length === 0) {
-              container.innerHTML = '<div style="background:#08090D; border:1px solid #A1A69C; border-radius:8px; padding:16px;"><p style="color:#A1A69C; font-size:14px;">No projects yet. Click "Add Project" to get started.</p></div>';
+              container.innerHTML = '<div style="background:#08090D; border:1px solid #A1A69C; border-radius:8px; padding:16px;"><p style="color:#A1A69C; font-size:14px;">No cosplay yet. Click "Add Cosplay" to get started.</p></div>';
               return;
           }
-          console.log('Loading', json.data.length, 'projects');
+          console.log('Loading', json.data.length, 'cosplay');
           json.data.forEach(item => {
               const card = document.createElement('div');
-              card.className = 'dashboard-project-card';
+              card.className = 'dashboard-cosplay-card';
               card.style.background = '#08090D';
               card.style.border = '1px solid #A1A69C';
               card.style.borderRadius = '8px';
@@ -615,14 +622,14 @@ function loadDashboardProjects() {
                 <h4 style="color: #fff; margin-bottom: 4px;">${escapeHtml(item.title)}</h4>
                 <p style="color: #A1A69C; font-size: 12px; margin-bottom: 8px;">${escapeHtml(item.description || 'No description')}</p>
                 <div style="margin-top: 8px; display: flex; gap: 4px; justify-content: center; flex-wrap: wrap;">
-                    <button class="btn btn-primary btn-edit-project" style="padding: 4px 8px; font-size: 11px;" data-id="${item.id}">Edit</button>
-                    <button class="btn btn-secondary btn-delete-project" style="padding: 4px 8px; font-size: 11px;" data-id="${item.id}">Delete</button>
+                    <button class="btn btn-primary btn-edit-cosplay" style="padding: 4px 8px; font-size: 11px;" data-id="${item.id}">Edit</button>
+                    <button class="btn btn-secondary btn-delete-cosplay" style="padding: 4px 8px; font-size: 11px;" data-id="${item.id}">Delete</button>
                 </div>
               `;
               container.appendChild(card);
           });
 
-          // Add "Add Project" card at the end
+          // Add "Add Cosplay" card at the end
           const addCard = document.createElement('div');
           addCard.style.background = '#08090D';
           addCard.style.border = '1px solid #A1A69C';
@@ -633,280 +640,87 @@ function loadDashboardProjects() {
             <div style="width: 100%; height: 120px; background: #292c3a; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: #A1A69C;">
                 <i class="fas fa-plus" style="font-size: 24px;"></i>
             </div>
-            <h4 style="color: #fff; margin-bottom: 4px;">Add Project</h4>
+            <h4 style="color: #fff; margin-bottom: 4px;">Add Cosplay</h4>
             <p style="color: #A1A69C; font-size: 12px;">Click to add new</p>
             <div style="margin-top: 8px;">
-                <button class="btn btn-primary btn-add-project" style="padding: 4px 8px; font-size: 12px;">Add</button>
+                <button class="btn btn-primary btn-add-cosplay" style="padding: 4px 8px; font-size: 12px;">Add</button>
             </div>
           `;
           container.appendChild(addCard);
 
           // Bind edit/delete/add actions
-          container.querySelectorAll('.btn-edit-project').forEach(btn => {
+          container.querySelectorAll('.btn-edit-cosplay').forEach(btn => {
               btn.addEventListener('click', function(){
                   const id = Number(this.getAttribute('data-id'));
-                  const project = json.data.find(p => p.id === id);
-                  if (project) {
-                      openProjectModal('edit', project);
+                  const cosplay = json.data.find(c => c.id === id);
+                  if (cosplay) {
+                      openCosplayModal('edit', cosplay);
                   }
               });
           });
 
-          container.querySelectorAll('.btn-delete-project').forEach(btn => {
+          container.querySelectorAll('.btn-delete-cosplay').forEach(btn => {
               btn.addEventListener('click', function(){
                   const id = Number(this.getAttribute('data-id'));
-                  if (!confirm('Delete this project?')) return;
-                  fetch('api/admin/projects.php', {
+                  if (!confirm('Delete this cosplay?')) return;
+                  fetch('api/admin/cosplay.php', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       credentials: 'same-origin',
                       body: JSON.stringify({ action: 'delete', id })
                   }).then(r=>r.json()).then(resp=>{
                       if (resp && resp.ok) {
-                          loadDashboardProjects();
+                          loadDashboardCosplay();
                       } else {
-                          alert('Failed to delete project');
+                          alert('Failed to delete cosplay');
                       }
-                  }).catch(()=>alert('Failed to delete project'));
+                  }).catch(()=>alert('Failed to delete cosplay'));
               });
           });
 
-          container.querySelectorAll('.btn-add-project').forEach(btn => {
+          container.querySelectorAll('.btn-add-cosplay').forEach(btn => {
               btn.addEventListener('click', function(){
-                  openProjectModal('create', null);
+                  openCosplayModal('create', null);
               });
           });
       })
       .catch((err) => {
-          console.error('Error loading projects:', err);
-          container.innerHTML = '<div style="background:#08090D; border:1px solid #A1A69C; border-radius:8px; padding:16px;"><p style="color:#A1A69C; font-size:14px;">Failed to load projects. Please refresh the page.</p></div>';
+          console.error('Error loading cosplay:', err);
+          container.innerHTML = '<div style="background:#08090D; border:1px solid #A1A69C; border-radius:8px; padding:16px;"><p style="color:#A1A69C; font-size:14px;">Failed to load cosplay. Please refresh the page.</p></div>';
       });
 }
 
-// Load Projects page content values
-function loadProjectsPageContent(){
-    fetch('api/admin/page_content.php?page=index&section=projects_title', { credentials: 'same-origin' })
+// Load Cosplay page content values
+function loadCosplayPageContent(){
+    fetch('api/admin/page_content.php?page=cosplay&section=page_title', { credentials: 'same-origin' })
       .then(r=>r.json()).then(j=>{ 
           if (j && j.ok && j.content != null) { 
-              const el = document.getElementById('projects-page-title'); 
+              const el = document.getElementById('cosplay-page-title'); 
               if (el) el.value = j.content; 
           } 
       });
     
-    fetch('api/admin/page_content.php?page=index&section=projects_description', { credentials: 'same-origin' })
+    fetch('api/admin/page_content.php?page=cosplay&section=page_description', { credentials: 'same-origin' })
       .then(r=>r.json()).then(j=>{ 
           if (j && j.ok && j.content != null) { 
-              const el = document.getElementById('projects-page-description'); 
+              const el = document.getElementById('cosplay-page-description'); 
               if (el) el.value = j.content; 
           } 
       });
     
-    fetch('api/admin/page_content.php?page=index&section=hero_title', { credentials: 'same-origin' })
+    fetch('api/admin/page_content.php?page=cosplay&section=hero_title', { credentials: 'same-origin' })
       .then(r=>r.json()).then(j=>{ 
           if (j && j.ok && j.content != null) { 
-              const el = document.getElementById('projects-hero-title'); 
+              const el = document.getElementById('cosplay-hero-title'); 
               if (el) el.value = j.content; 
           } 
       });
     
-    fetch('api/admin/page_content.php?page=index&section=hero_subtitle', { credentials: 'same-origin' })
+    fetch('api/admin/page_content.php?page=cosplay&section=hero_subtitle', { credentials: 'same-origin' })
       .then(r=>r.json()).then(j=>{ 
           if (j && j.ok && j.content != null) { 
-              const el = document.getElementById('projects-hero-subtitle'); 
+              const el = document.getElementById('cosplay-hero-subtitle'); 
               if (el) el.value = j.content; 
           } 
       });
-}
-
-// Project Images Management Modal
-function openProjectImagesModal(projectId, projectTitle) {
-    const modal = document.getElementById('projectImagesModal');
-    const titleEl = document.getElementById('pim-title');
-    const projectIdEl = document.getElementById('pim-project-id');
-    
-    if (!modal || !titleEl || !projectIdEl) {
-        console.error('Project images modal elements not found');
-        return;
-    }
-    
-    projectIdEl.value = projectId;
-    titleEl.textContent = 'Manage Images: ' + (projectTitle || 'Project');
-    modal.style.display = 'flex';
-    
-    loadProjectImages(projectId);
-    
-    // Setup upload button
-    const uploadBtn = document.getElementById('pim-upload-btn');
-    if (uploadBtn) {
-        uploadBtn.onclick = function() {
-            uploadProjectImages(projectId);
-        };
-    }
-    
-    // Setup close button
-    const closeBtn = document.getElementById('pim-close');
-    if (closeBtn) {
-        closeBtn.onclick = function() {
-            modal.style.display = 'none';
-        };
-    }
-    
-    // Close on outside click
-    modal.onclick = function(e) {
-        if (e.target === modal) {
-            modal.style.display = 'none';
-        }
-    };
-}
-
-function loadProjectImages(projectId) {
-    const grid = document.getElementById('pim-images-grid');
-    if (!grid) return;
-    
-    grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #A1A69C;"><i class="fas fa-spinner fa-spin" style="font-size: 24px;"></i><p style="margin-top: 8px;">Loading images...</p></div>';
-    
-    fetch('api/admin/project_images.php?project_id=' + projectId, { credentials: 'same-origin' })
-        .then(r => r.json())
-        .then(json => {
-            grid.innerHTML = '';
-            
-            if (!json || !json.ok || !Array.isArray(json.data) || json.data.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #A1A69C;"><i class="fas fa-image" style="font-size: 48px; opacity: 0.5;"></i><p style="margin-top: 16px;">No images uploaded yet. Upload images above.</p></div>';
-                return;
-            }
-            
-            json.data.forEach(img => {
-                const item = document.createElement('div');
-                item.className = 'pim-image-item grid-' + (img.grid_size || 'medium');
-                item.style.gridColumn = 'span ' + (img.grid_size === 'small' ? '3' : img.grid_size === 'large' ? '6' : '4');
-                item.style.gridRow = 'span ' + (img.grid_size === 'small' ? '2' : img.grid_size === 'large' ? '4' : '3');
-                item.style.position = 'relative';
-                item.style.background = '#292c3a';
-                item.style.borderRadius = '8px';
-                item.style.overflow = 'hidden';
-                item.style.cursor = 'pointer';
-                
-                const imgEl = document.createElement('img');
-                imgEl.src = img.image_path;
-                imgEl.alt = img.alt_text || '';
-                imgEl.style.width = '100%';
-                imgEl.style.height = '100%';
-                imgEl.style.objectFit = 'cover';
-                imgEl.style.display = 'block';
-                
-                const overlay = document.createElement('div');
-                overlay.style.position = 'absolute';
-                overlay.style.top = '0';
-                overlay.style.left = '0';
-                overlay.style.right = '0';
-                overlay.style.bottom = '0';
-                overlay.style.background = 'rgba(0,0,0,0.7)';
-                overlay.style.display = 'flex';
-                overlay.style.alignItems = 'center';
-                overlay.style.justifyContent = 'center';
-                overlay.style.gap = '8px';
-                overlay.style.opacity = '0';
-                overlay.style.transition = 'opacity 0.3s';
-                
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'btn btn-secondary';
-                deleteBtn.style.padding = '6px 12px';
-                deleteBtn.style.fontSize = '12px';
-                deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Delete';
-                deleteBtn.onclick = function(e) {
-                    e.stopPropagation();
-                    if (confirm('Delete this image?')) {
-                        deleteProjectImage(img.id, projectId);
-                    }
-                };
-                
-                overlay.appendChild(deleteBtn);
-                item.appendChild(imgEl);
-                item.appendChild(overlay);
-                
-                item.onmouseenter = function() {
-                    overlay.style.opacity = '1';
-                };
-                item.onmouseleave = function() {
-                    overlay.style.opacity = '0';
-                };
-                
-                grid.appendChild(item);
-            });
-        })
-        .catch(err => {
-            console.error('Error loading project images:', err);
-            grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #A1A69C;"><p>Error loading images. Please refresh.</p></div>';
-        });
-}
-
-function uploadProjectImages(projectId) {
-    const fileInput = document.getElementById('pim-image-files');
-    const gridSize = document.getElementById('pim-grid-size').value;
-    const statusDiv = document.getElementById('pim-upload-status');
-    const messageSpan = document.getElementById('pim-upload-message');
-    
-    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-        alert('Please select at least one image file');
-        return;
-    }
-    
-    const formData = new FormData();
-    formData.append('project_id', projectId);
-    formData.append('grid_size', gridSize);
-    
-    for (let i = 0; i < fileInput.files.length; i++) {
-        formData.append('images[]', fileInput.files[i]);
-    }
-    
-    statusDiv.style.display = 'block';
-    messageSpan.textContent = 'Uploading...';
-    messageSpan.style.color = '#A1A69C';
-    
-    fetch('api/admin/upload_project_images.php', {
-        method: 'POST',
-        credentials: 'same-origin',
-        body: formData
-    })
-    .then(r => r.json())
-    .then(json => {
-        if (json && json.ok) {
-            messageSpan.textContent = 'Upload successful! ' + (json.uploaded ? json.uploaded.length : 0) + ' image(s) uploaded.';
-            messageSpan.style.color = '#4CAF50';
-            fileInput.value = '';
-            loadProjectImages(projectId);
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, 3000);
-        } else {
-            messageSpan.textContent = 'Upload failed: ' + (json.error || 'Unknown error');
-            messageSpan.style.color = '#f44336';
-        }
-    })
-    .catch(err => {
-        console.error('Upload error:', err);
-        messageSpan.textContent = 'Upload failed. Please try again.';
-        messageSpan.style.color = '#f44336';
-    });
-}
-
-function deleteProjectImage(imageId, projectId) {
-    fetch('api/admin/project_images.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',
-        body: JSON.stringify({ action: 'delete', id: imageId })
-    })
-    .then(r => r.json())
-    .then(json => {
-        if (json && json.ok) {
-            loadProjectImages(projectId);
-        } else {
-            alert('Failed to delete image');
-        }
-    })
-    .catch(err => {
-        console.error('Delete error:', err);
-        alert('Failed to delete image');
-    });
 }

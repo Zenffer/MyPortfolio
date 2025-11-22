@@ -39,59 +39,26 @@ if (in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'])) {
 // Action routing
 $action = $_GET['action'] ?? $input['action'] ?? null;
 
-// Helper function to generate slug from title
-function generateSlug($title, $pdo, $excludeId = 0) {
-    $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title)));
-    $slug = preg_replace('/-+/', '-', $slug);
-    $slug = trim($slug, '-');
-    
-    // Ensure uniqueness
-    $baseSlug = $slug;
-    $counter = 1;
-    while (true) {
-        $stmt = $pdo->prepare("SELECT id FROM projects WHERE slug = ? AND id != ?");
-        $stmt->execute([$slug, $excludeId]);
-        if (!$stmt->fetch()) {
-            break;
-        }
-        $slug = $baseSlug . '-' . $counter;
-        $counter++;
-    }
-    return $slug;
-}
-
 try {
     if ($method === 'GET') {
-        // Get single project by slug or id
-        $slug = $_GET['slug'] ?? null;
+        // Get single photography by id
         $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
         
-        if ($slug) {
-            $stmt = $pdo->prepare("SELECT id, title, slug, description, image_path, alt_text, display_order, created_at, updated_at FROM projects WHERE slug = ?");
-            $stmt->execute([$slug]);
-            $project = $stmt->fetch();
-            if ($project) {
-                echo json_encode(['ok' => true, 'data' => $project]);
-            } else {
-                http_response_code(404);
-                echo json_encode(['ok' => false, 'error' => 'Project not found']);
-            }
-            exit;
-        } elseif ($id > 0) {
-            $stmt = $pdo->prepare("SELECT id, title, slug, description, image_path, alt_text, display_order, created_at, updated_at FROM projects WHERE id = ?");
+        if ($id > 0) {
+            $stmt = $pdo->prepare("SELECT id, title, description, image_path, alt_text, display_order, created_at, updated_at FROM photography WHERE id = ?");
             $stmt->execute([$id]);
-            $project = $stmt->fetch();
-            if ($project) {
-                echo json_encode(['ok' => true, 'data' => $project]);
+            $photo = $stmt->fetch();
+            if ($photo) {
+                echo json_encode(['ok' => true, 'data' => $photo]);
             } else {
                 http_response_code(404);
-                echo json_encode(['ok' => false, 'error' => 'Project not found']);
+                echo json_encode(['ok' => false, 'error' => 'Photo not found']);
             }
             exit;
         }
         
-        // List all projects
-        $stmt = $pdo->prepare("SELECT id, title, slug, description, image_path, alt_text, display_order, created_at, updated_at FROM projects ORDER BY display_order ASC, id ASC");
+        // List all photography
+        $stmt = $pdo->prepare("SELECT id, title, description, image_path, alt_text, display_order, created_at, updated_at FROM photography ORDER BY display_order ASC, id ASC");
         $stmt->execute();
         $rows = $stmt->fetchAll();
         echo json_encode(['ok' => true, 'data' => $rows]);
@@ -103,7 +70,6 @@ try {
         $description = trim($input['description'] ?? '');
         $image_path = trim($input['image_path'] ?? '');
         $alt_text = trim($input['alt_text'] ?? '');
-        $slug = trim($input['slug'] ?? '');
         
         if ($title === '' || $image_path === '') {
             http_response_code(400);
@@ -111,19 +77,11 @@ try {
             exit;
         }
         
-        // Generate slug if not provided
-        if (empty($slug)) {
-            $slug = generateSlug($title, $pdo);
-        } else {
-            // Ensure slug is unique
-            $slug = generateSlug($slug, $pdo);
-        }
-        
         // Compute next display order
-        $next = (int)$pdo->query("SELECT COALESCE(MAX(display_order),0)+1 FROM projects")->fetchColumn();
-        $stmt = $pdo->prepare("INSERT INTO projects (title, slug, description, image_path, alt_text, display_order) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$title, $slug, $description ?: null, $image_path, $alt_text ?: null, $next]);
-        echo json_encode(['ok' => true, 'id' => (int)$pdo->lastInsertId(), 'slug' => $slug]);
+        $next = (int)$pdo->query("SELECT COALESCE(MAX(display_order),0)+1 FROM photography")->fetchColumn();
+        $stmt = $pdo->prepare("INSERT INTO photography (title, description, image_path, alt_text, display_order) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$title, $description ?: null, $image_path, $alt_text ?: null, $next]);
+        echo json_encode(['ok' => true, 'id' => (int)$pdo->lastInsertId()]);
         exit;
     }
 
@@ -133,7 +91,6 @@ try {
         $description = trim($input['description'] ?? '');
         $image_path = trim($input['image_path'] ?? '');
         $alt_text = trim($input['alt_text'] ?? '');
-        $slug = trim($input['slug'] ?? '');
         
         if ($id <= 0 || $title === '' || $image_path === '') {
             http_response_code(400);
@@ -141,17 +98,9 @@ try {
             exit;
         }
         
-        // Generate slug if not provided or if title changed
-        if (empty($slug)) {
-            $slug = generateSlug($title, $pdo, $id);
-        } else {
-            // Ensure slug is unique (excluding current project)
-            $slug = generateSlug($slug, $pdo, $id);
-        }
-        
-        $stmt = $pdo->prepare("UPDATE projects SET title = ?, slug = ?, description = ?, image_path = ?, alt_text = ? WHERE id = ?");
-        $stmt->execute([$title, $slug, $description ?: null, $image_path, $alt_text ?: null, $id]);
-        echo json_encode(['ok' => true, 'slug' => $slug]);
+        $stmt = $pdo->prepare("UPDATE photography SET title = ?, description = ?, image_path = ?, alt_text = ? WHERE id = ?");
+        $stmt->execute([$title, $description ?: null, $image_path, $alt_text ?: null, $id]);
+        echo json_encode(['ok' => true]);
         exit;
     }
 
@@ -164,19 +113,19 @@ try {
         }
         
         // Get image path before deleting
-        $stmt = $pdo->prepare("SELECT image_path FROM projects WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT image_path FROM photography WHERE id = ?");
         $stmt->execute([$id]);
-        $project = $stmt->fetch();
+        $photo = $stmt->fetch();
         
-        // Delete the project
-        $stmt = $pdo->prepare("DELETE FROM projects WHERE id = ?");
+        // Delete the photo
+        $stmt = $pdo->prepare("DELETE FROM photography WHERE id = ?");
         $stmt->execute([$id]);
         
-        // Delete associated image file if it exists and is in our projects folder
-        if ($project && !empty($project['image_path'])) {
-            $imagePath = $project['image_path'];
-            // Only delete if it's a local file (starts with assets/img/content/projects/)
-            if (strpos($imagePath, 'assets/img/content/projects/') === 0) {
+        // Delete associated image file if it exists and is in our photography folder
+        if ($photo && !empty($photo['image_path'])) {
+            $imagePath = $photo['image_path'];
+            // Only delete if it's a local file (starts with assets/img/content/photography/)
+            if (strpos($imagePath, 'assets/img/content/photography/') === 0) {
                 $fullPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $imagePath;
                 if (file_exists($fullPath)) {
                     @unlink($fullPath);
@@ -197,7 +146,7 @@ try {
             exit;
         }
         $pdo->beginTransaction();
-        $stmt = $pdo->prepare("UPDATE projects SET display_order = ? WHERE id = ?");
+        $stmt = $pdo->prepare("UPDATE photography SET display_order = ? WHERE id = ?");
         foreach ($items as $it) {
             $id = (int)($it['id'] ?? 0);
             $order = (int)($it['display_order'] ?? 0);

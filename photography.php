@@ -1,3 +1,21 @@
+<?php
+require_once 'db.php';
+$config = $db_config;
+$photography_title = getPageContent($config, 'photography', 'page_title', 'Photography');
+$photography_description = getPageContent($config, 'photography', 'page_description', 'A selection of my favorite shots. More coming soon.');
+
+// Fetch photography from database
+$photography = [];
+try {
+    $pdo = getDatabaseConnection($config);
+    $stmt = $pdo->prepare("SELECT id, title, description, image_path, alt_text, display_order FROM photography ORDER BY display_order ASC, id ASC");
+    $stmt->execute();
+    $photography = $stmt->fetchAll();
+} catch (Exception $e) {
+    error_log("Failed to load photography: " . $e->getMessage());
+    $photography = [];
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,21 +26,22 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script defer src="assets/js/main.js"></script>
 </head>
 <body>
     <div class="cursor-circle" id="cursor-circle"></div>
     
-    <!-- Hero Section with Animated Background (copied from index.php) -->
+    <!-- Hero Section with Animated Background -->
     <section class="intro">
       <!-- Particle Animation Canvas -->
       <canvas id="intro-particles"></canvas>
       
       <!-- Main Name Display -->
-      <h1 class="name">Hi, I'm Jerome.</h1>
+      <h1 class="name"><?php echo htmlspecialchars(getPageContent($config, 'photography', 'hero_title', 'Hi, I\'m Jerome.')); ?></h1>
       
       <!-- Professional Title -->
-      <h2 class="title">Developer, Photographer & Cosplayer.</h2>
+      <h2 class="title"><?php echo htmlspecialchars(getPageContent($config, 'photography', 'hero_subtitle', 'Developer, Photographer & Cosplayer.')); ?></h2>
       
       <!-- Scroll Down Indicator -->
       <div class="scroll-indicator">
@@ -49,57 +68,45 @@
 
         <section id="photography" class="photo-section">
             <div class="photo-header">
-                <h1>Photography</h1>
-                <p>A selection of my favorite shots. More coming soon.</p>
+                <h1><?php echo htmlspecialchars($photography_title); ?></h1>
+                <p><?php echo htmlspecialchars($photography_description); ?></p>
             </div>
 
-            <div class="photo-grid">
-                <figure class="photo-card">
-                    <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1400&auto=format&fit=crop" alt="Mountain landscape at sunrise">
-                    <figcaption>
-                        <h3>Content Title</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    </figcaption>
-                </figure>
-                <figure class="photo-card">
-                    <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1400&auto=format&fit=crop" alt="Forest pathway with mist">
-                    <figcaption>
-                        <h3>Content Title</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    </figcaption>
-                </figure>
-                <figure class="photo-card">
-                    <img src="https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?q=80&w=1400&auto=format&fit=crop" alt="City skyline at dusk">
-                    <figcaption>
-                        <h3>Content Title</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    </figcaption>
-                </figure>
-                <figure class="photo-card">
-                    <img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1400&auto=format&fit=crop" alt="Desert dunes with shadows">
-                    <figcaption>
-                        <h3>Content Title</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    </figcaption>
-                </figure>
-                <figure class="photo-card">
-                    <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1400&auto=format&fit=crop" alt="Ocean waves">
-                    <figcaption>
-                        <h3>Content Title</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    </figcaption>
-                </figure>
-                <figure class="photo-card">
-                    <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=1400&auto=format&fit=crop" alt="Portrait in natural light">
-                    <figcaption>
-                        <h3>Content Title</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    </figcaption>
-                </figure>
+            <div class="photo-grid" id="photography-grid">
+                <?php if (empty($photography)): ?>
+                    <!-- No photography message -->
+                    <div style="text-align: center; padding: 40px; color: #A1A69C; grid-column: 1 / -1;">
+                        <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                        <p>No photography available at the moment.</p>
+                    </div>
+                <?php else: ?>
+                    <!-- Photography loaded from database -->
+                    <?php foreach ($photography as $photo): ?>
+                        <?php 
+                        $image_path = !empty($photo['image_path']) ? htmlspecialchars($photo['image_path']) : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23292c3a" width="400" height="300"/%3E%3Ctext fill="%23A1A69C" font-family="Arial" font-size="18" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
+                        $alt_text = htmlspecialchars($photo['alt_text'] ?? $photo['title'] ?? 'Photo image');
+                        $title = htmlspecialchars($photo['title'] ?? 'Untitled Photo');
+                        $description = htmlspecialchars($photo['description'] ?? '');
+                        $photo_url = 'photo.php?id=' . (int)$photo['id'];
+                        ?>
+                        <a href="<?php echo $photo_url; ?>" class="photo-card-link">
+                            <figure class="photo-card">
+                                <img src="<?php echo $image_path; ?>" alt="<?php echo $alt_text; ?>" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\'%3E%3Crect fill=\'%23292c3a\' width=\'400\' height=\'300\'/%3E%3Ctext fill=\'%23A1A69C\' font-family=\'Arial\' font-size=\'18\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\'%3ENo Image%3C/text%3E%3C/svg%3E';" />
+                                <figcaption>
+                                    <h3><?php echo $title; ?></h3>
+                                    <?php if (!empty($description)): ?>
+                                        <p><?php echo $description; ?></p>
+                                    <?php endif; ?>
+                                </figcaption>
+                            </figure>
+                        </a>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </section>
     </main>
 
+    <!-- Footer -->
     <footer>
         <p>&copy; <?php echo date("Y"); ?> My Portfolio. All rights reserved.</p>
     </footer>

@@ -46,9 +46,49 @@
     <div class="form-section">
         <h3>Photography Gallery</h3>
         <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-            <button id="btnAddPhotography" class="btn btn-primary">Add Photo</button>
+            <button id="btnAddPhotography" class="btn btn-primary" onclick="openPhotographyModal('create', null); return false;">Add Photo</button>
         </div>
-        <div id="dashboard-photography" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;"></div>
+        <div id="dashboard-photography" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
+            <!-- Photos will be loaded here -->
+        </div>
     </div>
 </div>
+
+<script>
+// Auto-load photography when this section becomes visible
+(function() {
+    // Use MutationObserver to detect when section becomes visible
+    const photographySection = document.getElementById('photographyContent');
+    const photographyContainer = document.getElementById('dashboard-photography');
+    
+    if (photographySection && photographyContainer) {
+        // Check if section is visible on load
+        const observer = new MutationObserver(function(mutations) {
+            const isVisible = photographySection.style.display !== 'none' && 
+                            window.getComputedStyle(photographySection).display !== 'none';
+            
+            if (isVisible && (!photographyContainer.innerHTML || photographyContainer.innerHTML.trim() === '' || photographyContainer.innerHTML.includes('<!-- Photos will be loaded here -->'))) {
+                if (typeof loadDashboardPhotography === 'function') {
+                    loadDashboardPhotography();
+                }
+            }
+        });
+        
+        // Observe changes to display style
+        observer.observe(photographySection, {
+            attributes: true,
+            attributeFilter: ['style']
+        });
+        
+        // Also check on initial load
+        if (window.getComputedStyle(photographySection).display !== 'none') {
+            setTimeout(function() {
+                if (typeof loadDashboardPhotography === 'function') {
+                    loadDashboardPhotography();
+                }
+            }, 300);
+        }
+    }
+})();
+</script>
 

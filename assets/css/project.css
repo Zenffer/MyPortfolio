@@ -1,0 +1,362 @@
+/* ===== CSS VARIABLES ===== */
+:root {
+    --offwhite: #f1faee;
+    --color-dark: #08090D;
+    --color-mid: #292c3a;
+    --color-light: #A1A69C;
+}
+
+/* ===== BASE STYLES ===== */
+body {
+    margin: 0;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    background: var(--color-dark);
+    color: #fff;
+}
+
+html, body {
+    height: 100%;
+}
+
+/* ===== TOP NAV (PORTFOLIO STYLE) ===== */
+.main-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    background: #fff;
+    color: #000;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.main-nav .logo {
+    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    color: #000;
+}
+
+.main-nav .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.main-nav .nav-links a {
+    text-decoration: none;
+    font-size: 14px;
+    color: #999;
+    transition: color 0.2s ease;
+}
+
+.main-nav .nav-links a.active {
+    font-weight: 700;
+    color: #000;
+}
+
+.main-nav .nav-links a:hover {
+    color: #000;
+}
+
+.main-nav .nav-links a.icon {
+    color: #bbb;
+}
+
+.main-nav .nav-links a.icon:hover {
+    color: #000;
+}
+
+/* ===== FOOTER STYLES ===== */
+footer {
+    text-align: center;
+    padding: 2rem 0;
+    background: var(--color-mid);
+    color: #fff;
+    font-size: 1rem;
+    border-top: 1px solid var(--color-light);
+    position: relative;
+    z-index: 20; /* Ensure footer is above .intro */
+    opacity: 1;  /* Always visible */
+    pointer-events: auto;
+}
+
+/* ===== PROJECT DETAIL STYLES ===== */
+.project-detail {
+    max-width: 1000px;
+    margin: 2rem auto 3rem;
+    padding: 0 24px;
+}
+
+.project-header {
+    margin-bottom: 2rem;
+}
+
+.project-header h1 {
+    font-size: 48px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    color: #fff;
+}
+
+.project-header .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #A1A69C;
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 24px;
+    transition: color 0.3s;
+}
+
+.project-header .back-link:hover {
+    color: #fff;
+}
+
+.project-description {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #fff;
+    max-width: 800px;
+}
+
+.project-thumbnail {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 60px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.project-thumbnail img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.project-images-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: auto;
+    gap: 16px;
+    margin-top: 60px;
+}
+
+.project-image-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #292c3a;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.project-image-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.project-image-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+
+/* Grid sizes - only control width, height adjusts to aspect ratio */
+.project-image-item.grid-small {
+    grid-column: span 3;
+}
+
+.project-image-item.grid-medium {
+    grid-column: span 4;
+}
+
+.project-image-item.grid-large {
+    grid-column: span 6;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .main-nav {
+        padding: 16px 24px;
+    }
+    
+    .main-nav .nav-links {
+        gap: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-nav {
+        padding: 14px 18px;
+    }
+    
+    .main-nav .nav-links {
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .project-detail {
+        padding: 0 20px;
+    }
+    
+    .project-header h1 {
+        font-size: 32px;
+    }
+    
+    .project-images-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+    
+    .project-image-item.grid-small,
+    .project-image-item.grid-medium,
+    .project-image-item.grid-large {
+        grid-column: span 6;
+    }
+}
+
+@media (max-width: 600px) {
+    .main-nav {
+        padding: 12px 16px;
+    }
+    
+    .main-nav .logo {
+        font-size: 14px;
+    }
+}
+
+/* Navbar stacking and horizontal scroll on very small screens */
+@media (max-width: 600px) {
+    .main-nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .main-nav .nav-links {
+        width: 100%;
+        margin-top: 8px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+        gap: 10px;
+        justify-content: flex-start;
+    }
+    
+    .main-nav .nav-links a {
+        padding: 10px 0;
+    }
+    
+    /* Optional thinner scrollbar */
+    .main-nav .nav-links {
+        scrollbar-width: thin;
+    }
+    
+    .main-nav .nav-links::-webkit-scrollbar {
+        height: 6px;
+    }
+    
+    .main-nav .nav-links::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 999px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-nav .nav-links a {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 400px) {
+    .main-nav .nav-links a {
+        font-size: 13px;
+    }
+}
+
+/* Lightbox */
+.lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.lightbox.active {
+    display: flex;
+}
+
+.lightbox-content {
+    max-width: 90%;
+    max-height: 90%;
+    position: relative;
+}
+
+.lightbox-content img {
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    font-size: 32px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.lightbox-nav:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.lightbox-prev {
+    left: 20px;
+}
+
+.lightbox-next {
+    right: 20px;
+}
+

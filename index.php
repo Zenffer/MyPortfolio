@@ -10,7 +10,7 @@ $projects_description = getPageContent($config, 'index', 'projects_description',
 $projects = [];
 try {
     $pdo = getDatabaseConnection($config);
-    $stmt = $pdo->prepare("SELECT id, title, description, image_path, alt_text, display_order FROM projects ORDER BY display_order ASC, id ASC");
+    $stmt = $pdo->prepare("SELECT id, title, slug, description, image_path, alt_text, display_order FROM projects ORDER BY display_order ASC, id ASC");
     $stmt->execute();
     $projects = $stmt->fetchAll();
 } catch (Exception $e) {
@@ -86,21 +86,25 @@ try {
                 <?php else: ?>
                     <!-- Projects loaded from database -->
                     <?php foreach ($projects as $project): ?>
-                        <figure class="photo-card">
-                            <?php 
-                            $image_path = htmlspecialchars($project['image_path'] ?? '');
-                            $alt_text = htmlspecialchars($project['alt_text'] ?? $project['title'] ?? 'Project image');
-                            $title = htmlspecialchars($project['title'] ?? 'Untitled Project');
-                            $description = htmlspecialchars($project['description'] ?? '');
-                            ?>
-                            <img src="<?php echo $image_path; ?>" alt="<?php echo $alt_text; ?>" loading="lazy" />
-                            <figcaption>
-                                <h3><?php echo $title; ?></h3>
-                                <?php if (!empty($description)): ?>
-                                    <p><?php echo $description; ?></p>
-                                <?php endif; ?>
-                            </figcaption>
-                        </figure>
+                        <?php 
+                        $image_path = !empty($project['image_path']) ? htmlspecialchars($project['image_path']) : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23292c3a" width="400" height="300"/%3E%3Ctext fill="%23A1A69C" font-family="Arial" font-size="18" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
+                        $alt_text = htmlspecialchars($project['alt_text'] ?? $project['title'] ?? 'Project image');
+                        $title = htmlspecialchars($project['title'] ?? 'Untitled Project');
+                        $description = htmlspecialchars($project['description'] ?? '');
+                        $slug = htmlspecialchars($project['slug'] ?? '');
+                        $project_url = !empty($slug) ? 'project.php?slug=' . urlencode($slug) : 'project.php?id=' . (int)$project['id'];
+                        ?>
+                        <a href="<?php echo $project_url; ?>" class="photo-card-link">
+                            <figure class="photo-card">
+                                <img src="<?php echo $image_path; ?>" alt="<?php echo $alt_text; ?>" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\'%3E%3Crect fill=\'%23292c3a\' width=\'400\' height=\'300\'/%3E%3Ctext fill=\'%23A1A69C\' font-family=\'Arial\' font-size=\'18\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\'%3ENo Image%3C/text%3E%3C/svg%3E';" />
+                                <figcaption>
+                                    <h3><?php echo $title; ?></h3>
+                                    <?php if (!empty($description)): ?>
+                                        <p><?php echo $description; ?></p>
+                                    <?php endif; ?>
+                                </figcaption>
+                            </figure>
+                        </a>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>

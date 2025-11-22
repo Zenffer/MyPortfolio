@@ -234,6 +234,14 @@ main.visible {
   gap: 16px;
 }
 
+.photo-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
 .photo-card {
   margin: 0;
   border-radius: 12px;
@@ -242,13 +250,13 @@ main.visible {
   box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   position: relative;
   cursor: pointer;
+  aspect-ratio: 4/3;
 }
 
 .photo-card img {
   display: block;
   width: 100%;
   height: 100%;
-  aspect-ratio: 4/3;
   object-fit: cover;
   transition: all 0.4s ease;
 }
@@ -271,6 +279,7 @@ main.visible {
   transform: translateY(20px);
   transition: all 0.4s ease;
   z-index: 2;
+  pointer-events: none;
 }
 
 .photo-card figcaption h3 {
@@ -295,6 +304,7 @@ main.visible {
 .photo-card:hover figcaption {
   opacity: 1;
   transform: translateY(0);
+  pointer-events: auto;
 }
 
 /* Enhanced hover effect for project cards */
@@ -372,8 +382,19 @@ main.visible {
 /* Remove top margin for pages without hero sections */
 body:has(.contact-section) main,
 body:has(.about-section) main,
-body:has(.kind-words-section) main {
-  margin-top: 0;
+body:has(.kind-words-section) main,
+body:has(.project-detail) main,
+body:has(.project-section) main {
+  margin-top: 0 !important;
+}
+
+/* Also remove margin-top for visible main on these pages */
+body:has(.contact-section) main.visible,
+body:has(.about-section) main.visible,
+body:has(.kind-words-section) main.visible,
+body:has(.project-detail) main.visible,
+body:has(.project-section) main.visible {
+  margin-top: 0 !important;
 }
 
 .contact-section { max-width: 1100px; margin: 2rem auto 3rem; padding: 0 24px; }
