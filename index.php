@@ -1,3 +1,23 @@
+<?php
+require_once 'db.php';
+$config = $db_config;
+$hero_title = getPageContent($config, 'index', 'hero_title', 'Hi, I\'m Jerome.');
+$hero_subtitle = getPageContent($config, 'index', 'hero_subtitle', 'Developer, Photographer & Cosplayer.');
+$projects_title = getPageContent($config, 'index', 'projects_title', 'Projects');
+$projects_description = getPageContent($config, 'index', 'projects_description', 'A showcase of my recent development work and creative projects.');
+
+// Fetch projects from database
+$projects = [];
+try {
+    $pdo = getDatabaseConnection($config);
+    $stmt = $pdo->prepare("SELECT id, title, description, image_path, alt_text, display_order FROM projects ORDER BY display_order ASC, id ASC");
+    $stmt->execute();
+    $projects = $stmt->fetchAll();
+} catch (Exception $e) {
+    error_log("Failed to load projects: " . $e->getMessage());
+    $projects = [];
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,10 +42,10 @@
       <canvas id="intro-particles"></canvas>
       
       <!-- Main Name Display -->
-      <h1 class="name">Hi, I'm Jerome.</h1>
+      <h1 class="name"><?php echo htmlspecialchars($hero_title); ?></h1>
       
       <!-- Professional Title -->
-      <h2 class="title">Developer, Photographer & Cosplayer.</h2>
+      <h2 class="title"><?php echo htmlspecialchars($hero_subtitle); ?></h2>
       
       <!-- Scroll Down Indicator -->
       <div class="scroll-indicator">
@@ -52,53 +72,37 @@
 
         <section id="projects" class="photo-section">
             <div class="photo-header">
-                <h1>Projects</h1>
-                <p>A showcase of my recent development work and creative projects.</p>
+                <h1><?php echo htmlspecialchars($projects_title); ?></h1>
+                <p><?php echo htmlspecialchars($projects_description); ?></p>
             </div>
 
-            <div class="photo-grid">
-                <figure class="photo-card">
-                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1400&auto=format&fit=crop" alt="Web development project dashboard">
-                    <figcaption>
-                        <h3>Content Title</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    </figcaption>
-                </figure>
-                <figure class="photo-card">
-                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1400&auto=format&fit=crop" alt="Data visualization dashboard">
-                    <figcaption>
-                        <h3>Content Title</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    </figcaption>
-                </figure>
-                <figure class="photo-card">
-                    <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?q=80&w=1400&auto=format&fit=crop" alt="Mobile app interface">
-                    <figcaption>
-                        <h3>Content Title</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    </figcaption>
-                </figure>
-                <figure class="photo-card">
-                    <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1400&auto=format&fit=crop" alt="E-commerce website">
-                    <figcaption>
-                        <h3>Content Title</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    </figcaption>
-                </figure>
-                <figure class="photo-card">
-                    <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=1400&auto=format&fit=crop" alt="API integration project">
-                    <figcaption>
-                        <h3>Content Title</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    </figcaption>
-                </figure>
-                <figure class="photo-card">
-                    <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1400&auto=format&fit=crop" alt="Database management system">
-                    <figcaption>
-                        <h3>Content Title</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    </figcaption>
-                </figure>
+            <div class="photo-grid" id="projects-grid">
+                <?php if (empty($projects)): ?>
+                    <!-- No projects message -->
+                    <div style="text-align: center; padding: 40px; color: #A1A69C; grid-column: 1 / -1;">
+                        <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                        <p>No projects available at the moment.</p>
+                    </div>
+                <?php else: ?>
+                    <!-- Projects loaded from database -->
+                    <?php foreach ($projects as $project): ?>
+                        <figure class="photo-card">
+                            <?php 
+                            $image_path = htmlspecialchars($project['image_path'] ?? '');
+                            $alt_text = htmlspecialchars($project['alt_text'] ?? $project['title'] ?? 'Project image');
+                            $title = htmlspecialchars($project['title'] ?? 'Untitled Project');
+                            $description = htmlspecialchars($project['description'] ?? '');
+                            ?>
+                            <img src="<?php echo $image_path; ?>" alt="<?php echo $alt_text; ?>" loading="lazy" />
+                            <figcaption>
+                                <h3><?php echo $title; ?></h3>
+                                <?php if (!empty($description)): ?>
+                                    <p><?php echo $description; ?></p>
+                                <?php endif; ?>
+                            </figcaption>
+                        </figure>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </section>
     </main>

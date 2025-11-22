@@ -285,6 +285,91 @@
         mainEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     }
+
+    // Load projects dynamically
+    (function loadProjects() {
+      var projectsGrid = document.getElementById('projects-grid');
+      if (!projectsGrid) {
+        console.log('Projects grid not found');
+        return;
+      }
+
+      console.log('Loading projects from api/projects.php');
+      
+      fetch('api/projects.php')
+        .then(function(res) {
+          if (!res.ok) {
+            throw new Error('HTTP error! status: ' + res.status);
+          }
+          return res.json();
+        })
+        .catch(function(err) {
+          console.error('Fetch error:', err);
+          return { ok: false, error: 'Network error: ' + err.message };
+        })
+        .then(function(json) {
+          console.log('Projects response:', json);
+          
+          if (!json || !json.ok) {
+            var errorMsg = json && json.error ? json.error : 'Failed to load projects';
+            projectsGrid.innerHTML = '<div style="text-align: center; padding: 40px; color: #A1A69C;"><p>' + errorMsg + '</p></div>';
+            return;
+          }
+
+          if (!Array.isArray(json.data)) {
+            projectsGrid.innerHTML = '<div style="text-align: center; padding: 40px; color: #A1A69C;"><p>Invalid response format.</p></div>';
+            return;
+          }
+
+          if (json.data.length === 0) {
+            projectsGrid.innerHTML = '<div style="text-align: center; padding: 40px; color: #A1A69C;"><p>No projects to display.</p></div>';
+            return;
+          }
+
+          projectsGrid.innerHTML = '';
+          json.data.forEach(function(project) {
+            var figure = document.createElement('figure');
+            figure.className = 'photo-card';
+            
+            var img = document.createElement('img');
+            // Handle both relative and absolute URLs
+            var imageSrc = project.image_path || '';
+            if (imageSrc && !imageSrc.startsWith('http') && !imageSrc.startsWith('/')) {
+              // If it's a relative path, ensure it starts with /
+              imageSrc = '/' + imageSrc.replace(/^\/+/, '');
+            }
+            img.src = imageSrc;
+            img.alt = project.alt_text || project.title || 'Project image';
+            
+            // Add error handler for broken images
+            img.onerror = function() {
+              this.style.display = 'none';
+              var placeholder = document.createElement('div');
+              placeholder.style.cssText = 'width: 100%; height: 300px; background: #292c3a; display: flex; align-items: center; justify-content: center; color: #A1A69C;';
+              placeholder.innerHTML = '<i class="fas fa-image" style="font-size: 48px;"></i>';
+              figure.insertBefore(placeholder, figure.firstChild);
+            };
+            
+            var figcaption = document.createElement('figcaption');
+            var h3 = document.createElement('h3');
+            h3.textContent = project.title || 'Untitled Project';
+            var p = document.createElement('p');
+            p.textContent = project.description || '';
+            
+            figcaption.appendChild(h3);
+            if (project.description) {
+              figcaption.appendChild(p);
+            }
+            figure.appendChild(img);
+            figure.appendChild(figcaption);
+            projectsGrid.appendChild(figure);
+          });
+        })
+        .catch(function(err) {
+          console.error('Error loading projects:', err);
+          projectsGrid.innerHTML = '<div style="text-align: center; padding: 40px; color: #A1A69C;"><p>Failed to load projects. Please try again later.</p></div>';
+        });
+    })();
   });
 })();
 

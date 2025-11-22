@@ -32,6 +32,7 @@ require_once 'includes/dashboard_auth.php';
     <script src="assets/js/dashboard/sidebar.js"></script>
     <script src="assets/js/dashboard/sections.js"></script>
     <script src="assets/js/dashboard/testimonials.js"></script>
+    <script src="assets/js/dashboard/projects.js"></script>
     <script src="assets/js/dashboard/profile.js"></script>
     <script src="assets/js/dashboard/contact.js"></script>
     <script src="assets/js/dashboard/main.js"></script>

@@ -1,5 +1,8 @@
 // Document ready handlers and event listeners
 $(document).ready(function(){
+    // Initialize: Show content section by default, hide profile and contact
+    showMainSection('content');
+    
     // Load testimonials initially for content tab
     loadDashboardTestimonials();
     
@@ -42,8 +45,65 @@ $(document).ready(function(){
     // Add click event listeners to content navigation
     $('.settings-nav-item').click(function(e) {
         e.preventDefault();
-        const contentType = $(this).find('span').text().toLowerCase().replace(' ', '');
+        const contentType = $(this).find('span').text().toLowerCase().replace(/\s+/g, '');
         showContent(contentType);
+    });
+
+    // Projects Management: Add Project button
+    $('#contentArea').on('click', '#btnAddProject', function(e){
+        e.preventDefault();
+        console.log('Add Project button clicked');
+        if (typeof openProjectModal === 'function') {
+            openProjectModal('create', null);
+        } else {
+            console.error('openProjectModal function not found!');
+            alert('Error: Project modal function not loaded. Please refresh the page.');
+        }
+    });
+
+    // Projects Page Content: load on ready
+    loadProjectsPageContent();
+
+    // Save Projects Page Content
+    $('#contentArea').on('click', '#projects-save-page', function(e){
+        e.preventDefault();
+        const title = $('#projects-page-title').val().trim();
+        const desc = $('#projects-page-description').val().trim();
+        Promise.all([
+            savePageContent('index', 'projects_title', title),
+            savePageContent('index', 'projects_description', desc)
+        ]).then(results => {
+            const ok = results.every(r => r && r.ok);
+            if (ok) {
+                alert('Saved');
+            } else {
+                alert('Failed to save');
+            }
+        }).catch(()=>alert('Failed to save'));
+    });
+
+    // Save Projects Hero Content
+    $('#contentArea').on('click', '#projects-save-hero', function(e){
+        e.preventDefault();
+        const heroTitle = $('#projects-hero-title').val().trim();
+        const heroSubtitle = $('#projects-hero-subtitle').val().trim();
+        Promise.all([
+            savePageContent('index', 'hero_title', heroTitle),
+            savePageContent('index', 'hero_subtitle', heroSubtitle)
+        ]).then(results => {
+            const ok = results.every(r => r && r.ok);
+            if (ok) {
+                alert('Saved');
+            } else {
+                alert('Failed to save');
+            }
+        }).catch(()=>alert('Failed to save'));
+    });
+
+    // Preview (open public page in new tab)
+    $('#contentArea').on('click', '#projects-preview', function(e){
+        e.preventDefault();
+        window.open('index.php', '_blank');
     });
 
     // Cosplay submenu toggle

@@ -33,17 +33,31 @@ function showMainSection(sectionType) {
             break;
     }
 
-    // Add active class to clicked nav item
-    if (event && event.target) {
+    // Add active class to clicked nav item (if called from click event)
+    if (typeof event !== 'undefined' && event && event.target) {
         const navItem = event.target.closest('.nav-item');
         if (navItem) {
             navItem.classList.add('active');
         }
+    } else {
+        // If called programmatically, set active class based on sectionType
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            const onclick = item.getAttribute('onclick');
+            if (onclick && onclick.includes("showMainSection('" + sectionType + "')")) {
+                item.classList.add('active');
+            }
+        });
     }
 
-    // If content section is shown, also ensure testimonials are loaded
+    // If content section is shown, also ensure testimonials and projects are loaded
     if (sectionType === 'content') {
         loadDashboardTestimonials();
+        // Load projects after a small delay to ensure DOM is ready
+        setTimeout(function() {
+            loadDashboardProjects();
+            loadProjectsPageContent();
+        }, 200);
     }
     if (sectionType === 'contact') {
         loadContactMessages(1);
@@ -68,10 +82,18 @@ function showContent(contentType) {
     const selectedContent = document.getElementById(contentType + 'Content');
     if (selectedContent) {
         selectedContent.style.display = 'block';
+        // Load projects when projects content is shown
+        if (contentType === 'projects') {
+            // Small delay to ensure DOM is ready
+            setTimeout(function() {
+                loadDashboardProjects();
+                loadProjectsPageContent();
+            }, 100);
+        }
     }
 
-    // Add active class to clicked nav item
-    if (event && event.target) {
+    // Add active class to clicked nav item (if called from click event)
+    if (typeof event !== 'undefined' && event && event.target) {
         const navItem = event.target.closest('.settings-nav-item');
         if (navItem) {
             navItem.classList.add('active');

@@ -1,5 +1,5 @@
 <!-- Profile Management Layout -->
-                <div id="profileLayout" class="settings-layout">
+                <div id="profileLayout" class="settings-layout" style="display: none;">
                     <div class="settings-content">
                         <div class="content-section">
                             <div class="section-header">

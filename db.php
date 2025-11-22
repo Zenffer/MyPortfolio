@@ -153,6 +153,22 @@ function createTables($config) {
             KEY `email_idx` (`email`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ";
+    
+    // Projects table
+    $projects_sql = "
+        CREATE TABLE IF NOT EXISTS `projects` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `title` varchar(200) NOT NULL,
+            `description` text,
+            `image_path` varchar(255) NOT NULL,
+            `alt_text` varchar(200) DEFAULT NULL,
+            `display_order` int(11) DEFAULT 0,
+            `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            KEY `display_order` (`display_order`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ";
 
     // Insert dummy contact data after creating site_settings table
     $dummy_contact = [
@@ -175,6 +191,7 @@ function createTables($config) {
         $pdo->exec($gallery_images_sql);
         $pdo->exec($testimonials_sql);
         $pdo->exec($contact_messages_sql);
+        $pdo->exec($projects_sql);
 
         // Insert dummy contact data
         foreach ($dummy_contact as $k => $v) {
