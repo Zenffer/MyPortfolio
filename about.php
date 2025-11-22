@@ -66,7 +66,8 @@ function renderTagList($csv) {
                     </div>
                     <div class="about-actions">
                         <a class="btn" href="contact.php">Get in touch</a>
-                        <a class="btn ghost" href="<?php echo htmlspecialchars($resume_url); ?>" target="_blank" rel="noopener">Download résumé</a>
+                        <a class="btn ghost" href="resume.php" target="_blank" rel="noopener">View Résumé</a>
+                        <a class="btn ghost" href="resume-pdf.php" target="_blank" rel="noopener">Download PDF</a>
                     </div>
                 </div>
                 <div class="about-aside">

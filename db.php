@@ -394,12 +394,22 @@ function insertDefaultSettings($config) {
         'bio' => 'I craft clean, performant web experiences and tell stories through images and character work. With a background that blends software development, photography, and cosplay, I enjoy projects that balance technical depth with creative polish.',
         'bio_secondary' => 'When I\'m not shipping features, I\'m experimenting with lighting setups, sewing details, or planning the next shoot.',
         'email' => 'hello@example.com',
+        'phone' => '',
+        'location' => '',
         'linkedin' => 'https://www.linkedin.com',
         'instagram' => 'https://www.instagram.com',
+        'github' => '',
+        'website' => '',
         'resume_url' => '#',
         // Sample profile data
         'skills' => 'HTML/CSS, JavaScript (ES6+), PHP, MySQL, jQuery, REST APIs, Responsive UI, Accessibility (a11y), SEO, Photography, Studio Lighting, Cosplay Fabrication',
-        'tools' => 'VS Code, Git & GitHub, Docker, Postman, Figma, Adobe Photoshop, Adobe Lightroom'
+        'tools' => 'VS Code, Git & GitHub, Docker, Postman, Figma, Adobe Photoshop, Adobe Lightroom',
+        // Resume-specific fields (stored as JSON for structured data)
+        'resume_summary' => '',
+        'resume_education' => '',
+        'resume_experience' => '',
+        'resume_projects' => '',
+        'resume_certifications' => ''
     ];
     
     try {
